@@ -181,9 +181,7 @@ def load_data(path):
     NYC.init_borough()
     #load NYPD data
     year=['2015','2016']
-    year=['2016']
     month=['01','02','03','04','05','06','07','08','09','10','11','12']
-    month=['05','10']
     area_name=['bk','bx','mn','qn','si']
     #intersection
     for y in year:
