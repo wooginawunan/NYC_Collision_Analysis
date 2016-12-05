@@ -16,7 +16,7 @@ Copyright:
 @ nw1045@nyu.edu
 @ wooginawunan@gmail.com
 '''
-
+import numpy as np
 class city():
     def __init__(self,name='New York City'):
         self.name=name
@@ -25,6 +25,23 @@ class city():
         self.Highway_Dict=dict()
         self.Tunnel_Dict=dict()
         self.Bridge_Dict=dict()
+    def bridgeCatalog(self):
+        return sorted(self.Bridge_Dict.keys())
+    def tunnelCatalog(self):
+        return sorted(self.Tunnel_Dict.keys())
+    def highwayCatalog(self):
+        return sorted(self.Highway_Dict.keys())
+    def roadCatalog(self):
+        first=list('ABCDEFGHIGKLMNOPQRSTUVWXYZ')
+        keys=first.append('*Other')
+        Road_Catalog=dict.fromkeys(keys)
+        roadKey = np.array(list(self.Road_Dict.keys()))
+        mask=np.array([x.startswith(y) for x in self.Road_Dict.keys() for y in first]).reshape(len(self.Road_Dict),26)
+        for i in range(0,26):
+            key=first[i]
+            Road_Catalog[key]=roadKey[mask[:,i]]
+        return Road_Catalog
+        
     def init_borough(self):
         Manhattan=borough('Manhattan')
         Bronx=borough('Bronx')
@@ -53,6 +70,9 @@ class borough():
         self.precinctList=dict()
     def addprecinct(self, precinct):
         self.precinctList[precinct.ID]= precinct
+    def precinctCatalog(self):
+        return sorted(self.precinctList.keys())
+    
     def __repr__(self):
         str_print="Borough Name %s \n" % self.name
         str_print = str_print + 'It has %d precincts\n' % len(self.precinctList)
@@ -90,9 +110,8 @@ class precinct():
         self.Collisions_HighTunBri[year][month]=collisions_H
         self.Factors_HighTunBri[year][month]= factors_H
            
-    def CollisionSummary(self):
-        pass
-         
+    
+        
     
 class road():
     def __init__(self,name_road):
@@ -103,44 +122,46 @@ class road():
     def addCollisions(self,year,month,collisions,factors):
         self.Collisions[year][month]=collisions
         self.Factors[year][month]= factors
-    def CollisionSummary(self):
-        '''self.CollisionNumber
-        self.TotalKilled
-        self.TotalInjured
-        self.MajorFactor'''
-        pass
 
-class highway():
-    def __init__(self,name_highway):
-        self.name=name_highway
-        dict_Month=dict()
-        self.Collisions={'2015': dict_Month,'2016': dict_Month}
-        self.Factors={'2015': dict_Month,'2016': dict_Month}
-    def addCollisions(self,year,month,collisions,factors):
-        self.Collisions[year][month]=collisions
-        self.Factors[year][month]= factors
-        
-    
-class bridge():
-    def __init__(self,name_bridge):
-        self.name=name_bridge
-        dict_Month=dict()
-        self.Collisions={'2015': dict_Month,'2016': dict_Month}
-        self.Factors={'2015': dict_Month,'2016': dict_Month}
-    def addCollisions(self,year,month,collisions,factors):
-        self.Collisions[year][month]=collisions
-        self.Factors[year][month]= factors
-class tunnel():
-    def __init__(self,name_tunnel):
-        self.name=name_tunnel
-        dict_Month=dict()
-        self.Collisions={'2015': dict_Month,'2016': dict_Month}
-        self.Factors={'2015': dict_Month,'2016': dict_Month}
-    def addCollisions(self,year,month,collisions,factors):
-        self.Collisions[year][month]=collisions
-        self.Factors[year][month]= factors
-        
-        
+class highway(road):
+    pass
+class bridge(road):
+    pass
+class tunnel(road):
+    pass
+
+# class highway():
+#     def __init__(self,name_highway):
+#         self.name=name_highway
+#         dict_Month=dict()
+#         self.Collisions={'2015': dict_Month,'2016': dict_Month}
+#         self.Factors={'2015': dict_Month,'2016': dict_Month}
+#     def addCollisions(self,year,month,collisions,factors):
+#         self.Collisions[year][month]=collisions
+#         self.Factors[year][month]= factors
+#         
+#     
+# class bridge():
+#     def __init__(self,name_bridge):
+#         self.name=name_bridge
+#         dict_Month=dict()
+#         self.Collisions={'2015': dict_Month,'2016': dict_Month}
+#         self.Factors={'2015': dict_Month,'2016': dict_Month}
+#     def addCollisions(self,year,month,collisions,factors):
+#         self.Collisions[year][month]=collisions
+#         self.Factors[year][month]= factors
+# 
+# class tunnel():
+#     def __init__(self,name_tunnel):
+#         self.name=name_tunnel
+#         dict_Month=dict()
+#         self.Collisions={'2015': dict_Month,'2016': dict_Month}
+#         self.Factors={'2015': dict_Month,'2016': dict_Month}
+#     def addCollisions(self,year,month,collisions,factors):
+#         self.Collisions[year][month]=collisions
+#         self.Factors[year][month]= factors
+#         
+#         
         
         
         

@@ -9,11 +9,17 @@ Copyright:
 @ nw1045@nyu.edu
 @ wooginawunan@gmail.com
 '''
+#def loadingANDbuilding():
 from WN_struct_building.building_CityCollisions import load_data
-if __name__ == "__main__":
+def StructureBuilding():
     try:
+        print('Loading data and initiating the system...... ')
         data_path='/Users/apple/Desktop/Projects/dataset_NYPD/'
         NYC = load_data(data_path)
-        print(NYC.Borough_Dict)
+        return NYC
+        
     except EOFError:
+        
         pass
+
+    

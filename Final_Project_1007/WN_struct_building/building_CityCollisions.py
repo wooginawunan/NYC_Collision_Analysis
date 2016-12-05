@@ -65,24 +65,34 @@ def load_data(path):
         Returns: NONE
         Raises:  NONE
         '''
-        for Road in collisions_intersection['IntersectingStreet'].unique():
+        all_street=set(collisions_intersection['IntersectingStreet'].unique())|set(collisions_intersection['CrossStreet'].unique())
+        for Road in all_street:
             if Road not in NYC.Road_Dict:
                 Road_new=road(Road)
             else:
                 Road_new=NYC.Road_Dict[Road]
-            Marker=list(collisions_intersection.ix[collisions_intersection['IntersectingStreet']==Road]['CollisionKey'])
-            Road_new.addCollisions(y, m, collisions_intersection.ix[collisions_intersection['IntersectingStreet']==Road],
+            Marker=list(collisions_intersection.ix[list(collisions_intersection['IntersectingStreet']==Road) or list(collisions_intersection['CrossStreet']==Road)]['CollisionKey'])
+            Road_new.addCollisions(y, m, collisions_intersection.ix[list(collisions_intersection['IntersectingStreet']==Road) or list(collisions_intersection['CrossStreet']==Road)],
                                        factors_intersection.ix[list(map(lambda x: x in Marker,factors_intersection['CollisionKey']))])
             NYC.add_road(Road_new)
-        for Road in collisions_intersection['CrossStreet'].unique():
-            if Road not in NYC.Road_Dict:
-                Road_new=road(Road)
-            else:
-                Road_new=NYC.Road_Dict[Road]
-            Marker=list(collisions_intersection.ix[collisions_intersection['CrossStreet']==Road]['CollisionKey'])
-            Road_new.addCollisions(y, m, collisions_intersection.ix[collisions_intersection['CrossStreet']==Road],
-                                       factors_intersection.ix[list(map(lambda x: x in Marker,factors_intersection['CollisionKey']))])
-            NYC.add_road(Road_new)
+#         for Road in collisions_intersection['IntersectingStreet'].unique():
+#             if Road not in NYC.Road_Dict:
+#                 Road_new=road(Road)
+#             else:
+#                 Road_new=NYC.Road_Dict[Road]
+#             Marker=list(collisions_intersection.ix[collisions_intersection['IntersectingStreet']==Road]['CollisionKey'])
+#             Road_new.addCollisions(y, m, collisions_intersection.ix[collisions_intersection['IntersectingStreet']==Road],
+#                                        factors_intersection.ix[list(map(lambda x: x in Marker,factors_intersection['CollisionKey']))])
+#             NYC.add_road(Road_new)
+#         for Road in collisions_intersection['CrossStreet'].unique():
+#             if Road not in NYC.Road_Dict:
+#                 Road_new=road(Road)
+#             else:
+#                 Road_new=NYC.Road_Dict[Road]
+#             Marker=list(collisions_intersection.ix[collisions_intersection['CrossStreet']==Road]['CollisionKey'])
+#             Road_new.addCollisions(y, m, collisions_intersection.ix[collisions_intersection['CrossStreet']==Road],
+#                                        factors_intersection.ix[list(map(lambda x: x in Marker,factors_intersection['CollisionKey']))])
+#             NYC.add_road(Road_new)
                
         
     def building_highway():
@@ -180,8 +190,10 @@ def load_data(path):
     NYC=city()
     NYC.init_borough()
     #load NYPD data
-    year=['2015','2016']
-    month=['01','02','03','04','05','06','07','08','09','10','11','12']
+    #year=['2015','2016']
+    year=['2015']
+    #month=['01','02','03','04','05','06','07','08','09','10','11','12']
+    month=['01']
     area_name=['bk','bx','mn','qn','si']
     #intersection
     for y in year:
@@ -196,6 +208,7 @@ def load_data(path):
                     building_bridge()
                     building_tunnel()
                 except FileNotFoundError:
+                    print('There is no file about above area and period')
                     print(y+m+area)
                     
                     
