@@ -29,8 +29,33 @@ def load_data(path):
     Returns:
         NYC : a well prepared city class
     Raises:  
-        FileNotFoundError (handling inside)    
+        FileNotFoundError (handling inside) 
+           
     '''
+    NYC=city()
+    NYC.init_borough()
+    #load NYPD data
+    #year=['2015','2016']
+    year=['2015']
+    #month=['01','02','03','04','05','06','07','08','09','10','11','12']
+    month=['01']
+    area_name=['bk','bx','mn','qn','si']
+    #intersection
+    for y in year:
+        for m in month:
+            for area in area_name:
+                try:
+                    collisions_intersection, factors_intersection = load_intersection(path, y, m, area)
+                    collisions_HighTunBri, factors_HighTunBri = load_HighTunBri(path, y, m, area)
+                    building_borough()   
+                    building_road() 
+                    building_highway()
+                    building_bridge()
+                    building_tunnel()
+                except FileNotFoundError:
+                    print('There is no file about above area and period')
+                    print(y+m+area)
+                    
     def building_borough():     
         '''
         Separate the collisions and factors by borough and precinct, store the data in NYC
@@ -187,29 +212,7 @@ def load_data(path):
         
         return collisions_HighTunBri, factors_HighTunBri
     
-    NYC=city()
-    NYC.init_borough()
-    #load NYPD data
-    #year=['2015','2016']
-    year=['2015']
-    #month=['01','02','03','04','05','06','07','08','09','10','11','12']
-    month=['01']
-    area_name=['bk','bx','mn','qn','si']
-    #intersection
-    for y in year:
-        for m in month:
-            for area in area_name:
-                try:
-                    collisions_intersection, factors_intersection = load_intersection(path, y, m, area)
-                    collisions_HighTunBri, factors_HighTunBri = load_HighTunBri(path, y, m, area)
-                    building_borough()   
-                    building_road() 
-                    building_highway()
-                    building_bridge()
-                    building_tunnel()
-                except FileNotFoundError:
-                    print('There is no file about above area and period')
-                    print(y+m+area)
+    
                     
                     
     return NYC

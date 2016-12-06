@@ -14,17 +14,18 @@ class FundamentalMethods():
         self.data=city
 class SituationMethods(FundamentalMethods):
     def briefSummary(self,level,name=[]):
-        TotalAccidennt()
-        TotalInjury()
-        TotalKilled()
+        pass
+        #TotalAccidennt()
+        #TotalInjury()
+        #TotalKilled()
     def PlotbyMonth(self,level,name=[]):
-        
+        pass
     def InjuryKillPIE(self,level,name=[]):
-        
+        pass
     def Map(self,level,name=[]):
-    
+        pass
     def BoroughCompare(self,level,name=[]):
-    
+        pass
     def RankTop10(self,level,name=[]):
-        
+        pass
         

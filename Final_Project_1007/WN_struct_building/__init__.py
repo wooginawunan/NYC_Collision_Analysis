@@ -9,17 +9,28 @@ Copyright:
 @ nw1045@nyu.edu
 @ wooginawunan@gmail.com
 '''
-#def loadingANDbuilding():
-from WN_struct_building.building_CityCollisions import load_data
-def StructureBuilding():
+
+import sys
+import os
+from inspect import getsourcefile
+from os.path import abspath
+from WN_struct_building.data_loading import load_data
+from CheckandError.DefinedError import ExitALLProgram
+def StructureBuilding(TimeBegin=[2015,1],TimeEnd=[2016,12]):
     try:
         print('Loading data and initiating the system...... ')
-        data_path='/Users/apple/Desktop/Projects/dataset_NYPD/'
-        NYC = load_data(data_path)
-        return NYC
-        
+        DataPath=os.getcwd()
+        DataPath=''.join([DataPath,'/NYPD_DATA/'])
+        while True:
+            try:
+                NYC = load_data(DataPath,TimeBegin,TimeEnd)
+                return NYC
+            except FileNotFoundError:
+                print("FILE NOT FOUND! or FILE INCOMPLETED!")
+                DataPath=input("Please Reset the data path to (Example: .../NYPD_DATA/):")
+                if DataPath=='Exit':
+                    raise ExitALLProgram               
     except EOFError:
-        
         pass
-
+#StructureBuilding([2015,1],[2015,1])
     

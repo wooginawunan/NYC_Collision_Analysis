@@ -10,7 +10,8 @@ Copyright:
 #"WN_User_Interact"
 #if __name__ == '__main__':
 
-from WN_User_Interact.Interaction_Modules  import ProgramIntroduction, Mainmenu
+from .Interaction_Modules  import ProgramIntroduction
+from .Interaction_Modules import Mainmenu
 if __name__ == "WN_User_Interact":
      
     ProgramIntroduction()

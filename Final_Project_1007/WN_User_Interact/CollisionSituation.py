@@ -4,8 +4,10 @@ Created on Dec 3, 2016
 @author: apple
 '''
 from Methods.Methods_BY_Level import MethodsMenu_Situation
-from WN_User_Interact.InputANDError import InputCheck
-from WN_User_Interact.Interaction_Modules import Mainmenu
+from CheckandError.Check import InputCheck
+#from WN_struct_building import StructureBuilding
+from .Interaction_Modules import Mainmenu
+
 def CollisionSituation(NYC):
     Interaction=Situation_Interaction(NYC)
     Level,Method,name,nameFlag=Interaction.Level_selection()
@@ -23,8 +25,12 @@ class Situation_Interaction():
                    (1,2,3,4,5,6,7):self.MethodMenu}
     
         LevelName={-2:[],1:'City',2:'Borough',3:'Precinct',4:'Highway',5:'Tunnel',6:'Bridge',7:'Road'}
-    
-        LevelFlow[Level]() if Level==-1 else Level, Method, name, nameFlag=LevelFlow[Level](LevelName[Level])
+        
+        if Level==-1:
+            LevelFlow[Level]()
+        else:
+            Level, Method, name, nameFlag=LevelFlow[Level](LevelName[Level])
+        #LevelFlow[Level]() if Level==-1 else Level, Method, name, nameFlag=LevelFlow[Level](LevelName[Level])
         
         
         return Level, Method, name, nameFlag
@@ -59,7 +65,12 @@ class Situation_Interaction():
                       'Road':self.menu.Road_Specific}
         
         InputName=SpecificMenu[Level](self.data)
-        Level, Method, name, nameFlag=self.MethodMenu(Level) if InputName==-1 else Level, Method, name, nameFlag=self.MethodMenu(Level,[],InputName,1)
+        if InputName==-1:
+            Level, Method, name, nameFlag=self.MethodMenu(Level)
+        else:
+            Level, Method, name, nameFlag=self.MethodMenu(Level,[],InputName,1)
+            
+        #Level, Method, name, nameFlag=self.MethodMenu(Level) if InputName==-1 else Level, Method, name, nameFlag=self.MethodMenu(Level,[],InputName,1)
             
         return Level, Method, name, nameFlag
     def MethodPresent(self,Level,Method=[],name=[],nameFlag=0):

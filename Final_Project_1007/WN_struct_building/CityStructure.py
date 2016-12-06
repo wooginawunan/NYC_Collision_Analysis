@@ -40,8 +40,15 @@ class city():
         for i in range(0,26):
             key=first[i]
             Road_Catalog[key]=roadKey[mask[:,i]]
+            
+        Road_Catalog['*Other']=roadKey[np.logical_not(np.any(mask,1))]
         return Road_Catalog
-        
+    def boroughCatalog(self):
+        Fullname={'bk': 'Brooklyn', 'bx': 'Bronx','mn':'Manhattan','qn':'Queens','si':'Staten_Island'} 
+        Road_Catalog=[]
+        for key in self.Borough_Dict.keys():
+            Road_Catalog.append(key+' : '+Fullname[key])
+        return Road_Catalog
     def init_borough(self):
         Manhattan=borough('Manhattan')
         Bronx=borough('Bronx')
