@@ -116,13 +116,13 @@ class Situation_Interaction():
                        0:self.SpecificInsight}
         Flow0.update(dict.fromkeys([1,2,3,4,5,6],self.MethodPresent))
         Flow1={-2:self.MethodMenu, #with name
-                       -1:self.MethodMenu} #back to no name
+                       -1:self.SpecificInsight} #back to no name
         Flow1.update(dict.fromkeys([1,2,3,4,5,6],self.MethodPresent))
         methodFlow={0:Flow0,1:Flow1}
-        if ((nameFlag==1) and (Method==-1)):
-            Level, Method, name, nameFlag = methodFlow[nameFlag][Method](Level, Method, [], 0)
-        else:
-            Level, Method, name, nameFlag = methodFlow[nameFlag][Method](Level, Method, name, nameFlag)
+        #if ((nameFlag==1) and (Method==-1)):
+        #   Level, Method, name, nameFlag = methodFlow[nameFlag][Method](Level, Method, [], 0)
+        #else:
+        Level, Method, name, nameFlag = methodFlow[nameFlag][Method](Level, Method, name, nameFlag)
         
         return Level, Method, name, nameFlag
     def SpecificInsight(self,Level,Method=[],name=[],nameFlag=0):

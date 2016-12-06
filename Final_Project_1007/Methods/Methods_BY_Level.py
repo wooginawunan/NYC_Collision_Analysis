@@ -8,12 +8,13 @@ from Methods.MethodClass import SituationMethods
 from CheckandError.Check import NameCheck,FirstCheck
 from CheckandError.DefinedError import GoingBack,InvalidFirst
 from astropy.wcs.docstrings import name
-
+class MethodMene_Contributing():
+    pass
 class MethodsMenu_Situation():
     '''
     classdocs
     '''
-
+  
 
     def __init__(self):
         '''
@@ -48,8 +49,8 @@ class MethodsMenu_Situation():
     
     def Borough_Specific(self,NYC):
         print('You can choose from:')
-        Road_Catalog=NYC.boroughCatalog()
-        print('\n'.join(Road_Catalog))
+        Bo_Catalog=NYC.boroughCatalog()
+        print('\n'.join(Bo_Catalog))
         name = input('Please input the short name(two letters) before the name:')
         name = NameCheck(NYC.Borough_Dict.keys(),name)
         if name==-2: 
@@ -57,17 +58,37 @@ class MethodsMenu_Situation():
         else:
             return name
     def Precinct_Specific(self,NYC):
-        print('You can choose from:')
-        for key in NYC.Borough_Dict.keys():
-            print(NYC.Borough_Dict[key].name+' : ')
-            precinctCata=NYC.Borough_Dict[key].precinctCatalog()
-            print('  \n'.join(precinctCata))
-        name = input('Please input the name:')
-        name = NameCheck(NYC.Precinct_Dict.keys(),name)
-        if name==-2: 
-            return self.Precinct_Specific(NYC)
-        else:
-            return name
+        print("Precinct are grouped by Borough.")
+        print("Please specific the Borough First.")
+        while True:
+            try:
+                print('You can choose a bourough from:')
+                Bo_Catalog=NYC.boroughCatalog()
+                print('\n'.join(Bo_Catalog))
+                Bname = input('Please input the short name(two letters) before the name:')
+                Bname = FirstCheck(NYC.Borough_Dict.keys(),Bname)
+                print(NYC.Borough_Dict[Bname].name+' : ')
+                precinctCata=NYC.Borough_Dict[Bname].precinctCatalog()
+                print('  \n'.join(precinctCata))
+                while True:
+                    try:
+                        name = input('Please input a precinct ID :')
+                        name = FirstCheck(NYC.Borough_Dict[Bname].precinctList.keys(),name)
+                        return name
+                    except GoingBack:
+                        break
+                    except InvalidFirst:
+                        pass
+            except GoingBack:
+                return -1
+            except InvalidFirst:
+                pass
+        
+
+            
+            
+        
+        
     def Bridge_Specific(self,NYC):
         print('You can choose from:')
         print('\n'.join(NYC.bridgeCatalog()))
@@ -103,7 +124,7 @@ class MethodsMenu_Situation():
             try:
                 
                 FirstC=input('Input a CAPITAL letter or *: ')
-                FirstC=NameCheck('ABCDEFGHIGKLMNOPQRSTUVWXYZ*',FirstC)
+                FirstC=FirstCheck('ABCDEFGHIGKLMNOPQRSTUVWXYZ*',FirstC)
                 roadCata=NYC.roadCatalog()
                 print('You can choose from:')
                 print('\n'.join(roadCata[FirstC]))
@@ -115,12 +136,12 @@ class MethodsMenu_Situation():
                     except GoingBack:
                         break
                     except InvalidFirst:
-                        print('Invalid Input!')
+                        pass
 
             except GoingBack:
                 return -1
             except InvalidFirst:
-                print('Invalid Input!')
+                pass
         
         
         

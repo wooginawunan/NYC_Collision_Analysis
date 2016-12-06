@@ -45,7 +45,7 @@ def NameCheck(availableSet,Input):
             return -1
         else:
             if Input in availableSet:
-                return input
+                return Input
             else:
                 print('Invalid Input!')
                 return -2
@@ -60,7 +60,7 @@ def FirstCheck(availableSet,Input):
             raise GoingBack
         else:
             if Input in availableSet:
-                return input
+                return Input
             else:
                 print('Invalid Input!')
                 raise InvalidFirst
