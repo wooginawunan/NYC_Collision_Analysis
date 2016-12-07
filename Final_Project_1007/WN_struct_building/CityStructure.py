@@ -33,7 +33,8 @@ class city():
         return sorted(self.Highway_Dict.keys())
     def roadCatalog(self):
         first=list('ABCDEFGHIGKLMNOPQRSTUVWXYZ')
-        keys=first.append('*Other')
+        keys=list('ABCDEFGHIGKLMNOPQRSTUVWXYZ')
+        keys.append('*Other')
         Road_Catalog=dict.fromkeys(keys)
         roadKey = np.array(list(self.Road_Dict.keys()))
         mask=np.array([x.startswith(y) for x in self.Road_Dict.keys() for y in first]).reshape(len(self.Road_Dict),26)

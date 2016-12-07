@@ -3,19 +3,12 @@ Created on Dec 2, 2016
 
 @author: apple
 '''
-
-from Methods.MethodClass import SituationMethods
-from CheckandError.Check import NameCheck,FirstCheck
-from CheckandError.DefinedError import GoingBack,InvalidFirst
-from astropy.wcs.docstrings import name
-class MethodMene_Contributing():
-    pass
+from .MethodClass import SituationMethods, ContributingMethods
 class MethodsMenu_Situation():
     '''
     classdocs
     '''
   
-
     def __init__(self):
         '''
         Constructor
@@ -38,111 +31,43 @@ class MethodsMenu_Situation():
                            'Precinct':{0:[0,4,5],1:[1,2,3]}}
         
         self.AvailableSet.update(dict.fromkeys(['Bridge','Highway','Tunnel','Road'],{0:[0,1,2,3,5],1:[1,2,3]}))
-    def FunctionINIT_Situation(self,NYC):
-        self.MethodFunction=SituationMethods(NYC)
+    
+    def FunctionINIT_Situation(self,NYC,SavePath):
+        self.MethodFunction=SituationMethods(NYC,SavePath)
         self.FunctionList={1:self.MethodFunction.briefSummary,
                            2:self.MethodFunction.PlotbyMonth,
                            3:self.MethodFunction.InjuryKillPIE,
                            4:self.MethodFunction.Map,
                            5:self.MethodFunction.RankTop10,
                            6:self.MethodFunction.BoroughCompare}
-    
-    def Borough_Specific(self,NYC):
-        print('You can choose from:')
-        Bo_Catalog=NYC.boroughCatalog()
-        print('\n'.join(Bo_Catalog))
-        name = input('Please input the short name(two letters) before the name:')
-        name = NameCheck(NYC.Borough_Dict.keys(),name)
-        if name==-2: 
-            return self.Borough_Specific(NYC)
-        else:
-            return name
-    def Precinct_Specific(self,NYC):
-        print("Precinct are grouped by Borough.")
-        print("Please specific the Borough First.")
-        while True:
-            try:
-                print('You can choose a bourough from:')
-                Bo_Catalog=NYC.boroughCatalog()
-                print('\n'.join(Bo_Catalog))
-                Bname = input('Please input the short name(two letters) before the name:')
-                Bname = FirstCheck(NYC.Borough_Dict.keys(),Bname)
-                print(NYC.Borough_Dict[Bname].name+' : ')
-                precinctCata=NYC.Borough_Dict[Bname].precinctCatalog()
-                print('  \n'.join(precinctCata))
-                while True:
-                    try:
-                        name = input('Please input a precinct ID :')
-                        name = FirstCheck(NYC.Borough_Dict[Bname].precinctList.keys(),name)
-                        return name
-                    except GoingBack:
-                        break
-                    except InvalidFirst:
-                        pass
-            except GoingBack:
-                return -1
-            except InvalidFirst:
-                pass
+class MethodMenu_Contributing():
+    def __init__(self):
+        '''
+        Constructor
+        '''
         
-
-            
-            
+        self.Fundamental=['1 Influence On Collision Severity','2 Relation Between Factors']
+        self.Whole=['0 Specific Insight']
+        self.BHTR=['0 Specific Insight','1 Influence On Collision Severity','2 Relation Between Factors']
+        self.List={'City':{0:self.Fundamental,1:self.Fundamental},
+                   'Borough':{0:self.Whole,1:self.Fundamental},
+                   'Precinct':{0:self.Whole,1:self.Fundamental}}
         
+        self.List.update(dict.fromkeys(['Bridge','Highway','Tunnel','Road'],{0:self.BHTR,1:self.Fundamental}))
+        self.AvailableSet={'City':{0:[1,2]},
+                           'Borough':{0:[0],1:[1,2]},
+                           'Precinct':{0:[0],1:[1,2]}}
         
-    def Bridge_Specific(self,NYC):
-        print('You can choose from:')
-        print('\n'.join(NYC.bridgeCatalog()))
-        name = input('Please input the name:')
-        name = NameCheck(NYC.Bridge_Dict.keys(),name)
-        if name==-2: 
-            return self.Bridge_Specific(NYC)
-        else:
-            return name
-    def Tunnel_Specific(self,NYC):
-        print('You can choose from:')
-        print('\n'.join(NYC.tunnelCatalog()))
-        name = input('Please input the name:')
-        name = NameCheck(NYC.Tunnel_Dict.keys(),name)
-        if name==-2: 
-            return self.Tunnel_Specific(NYC)
-        else:
-            return name
-    def Highway_Specific(self,NYC):
-        print('You can choose from:')
-        print('\n'.join(NYC.highwayCatalog()))
-        name = input('Please input the name:')
-        name = NameCheck(NYC.Highway_Dict.keys(),name)
-        if name==-2: 
-            return self.Highway_Specific(NYC)
-        else:
-            return name
-    def Road_Specific(self,NYC):
-        print('Please specify the first character of the road you want to explore.')
-        print('You can choose from ABCDEFGHIGKLMNOPQRSTUVWXYZ or *Other')
+        self.AvailableSet.update(dict.fromkeys(['Bridge','Highway','Tunnel','Road'],{0:[0,1,2],1:[1,2]}))
+        self.Influencer=['1 : VehicleType','2 : ContributingFactor' ,'3 : CollisionVehicleCount']
+        self.Indicator={1 : 'Number of Collisions',2 : 'CollisionInjuredCount',3 : 'CollisionKilledCount',4 : 'PersonsInjured',
+                        5 : 'PersonsKilled',6 : 'MotoristsInjured',7 : 'MotoristsKilled','8 : 'PassengInjured',9 : 'PassengKilled',
+                        10 : 'CyclistsInjured',11 : 'CyclistsKilled',12 : 'PedestrInjured',13 : 'PedestrKilled',14 : 'Injury_or_Fatal'}
         
-        while True:
-            try:
-                
-                FirstC=input('Input a CAPITAL letter or *: ')
-                FirstC=FirstCheck('ABCDEFGHIGKLMNOPQRSTUVWXYZ*',FirstC)
-                roadCata=NYC.roadCatalog()
-                print('You can choose from:')
-                print('\n'.join(roadCata[FirstC]))
-                while True:
-                    try:
-                        name = input('Please input the name:')
-                        name = FirstCheck(NYC.Road_Dict.keys(),name)
-                        return name
-                    except GoingBack:
-                        break
-                    except InvalidFirst:
-                        pass
-
-            except GoingBack:
-                return -1
-            except InvalidFirst:
-                pass
-        
+    def FunctionINIT_Contributing(self,NYC,SavePath):
+        self.MethodFunction=ContributingMethods(NYC,SavePath)
+        self.FunctionList={1:self.MethodFunction.InfluenceONSeverity,
+                           2:self.MethodFunction.RelationshipBetweenInfluencer}       
         
         
         

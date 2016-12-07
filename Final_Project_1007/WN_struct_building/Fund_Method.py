@@ -1,9 +1,25 @@
+from WN_struct_building.CityStructure import borough
 
-def TotalAccident(self, level, name, timeStart, timeEnd):
+def TotalAccident(self, level, name,indicator):
 	num = 0
-	# if(level == "City"):
-
+	if(level == "City"):
+		sum=0
+		for borough in self.Borough_Dict.values():
+			for precinct in borough.precinctList.values():
+				for year in precinct.Collisions_intersection.values():
+					for month in year.values():
+						sum(month['PersonKilled'])
+						len(month)
+ 
 	if(level == "Borough"):
+		for precinct in self.Borough_Dict[name].values():
+		    for year in precinct.Collisions_intersection.values():
+					for month in year.values():
+						sum(month['PersonKilled'])
+						len(month)
+						
+		
+		
 		for n in name:
 			for p in self.data.Borough_Dict[n].precinctList:
 				num = num + TotalAccident(self, "Precinct", p.ID)
@@ -11,7 +27,7 @@ def TotalAccident(self, level, name, timeStart, timeEnd):
 		for n in name:
 			for b in ['bk', 'bx','mn','qn','si']:
 				if (self.data.Borough_Dict[b].precinctList[name] != null) :
-					for Year, Month, collisions_I in self.data.Borough_Dict[b].precinctList[name].Collisions_intersection:
+					for Year, Month, collisions_I in self.data.Borough_Dict[b].precinctList[name].Collisions_intersection['2015']['01']:
 						num = num + 1
 					for Year, Month, collisions_H in self.data.Borough_Dict[b].precinctList[name].Collisions_HighTunBri:
 						num = num + 1
@@ -19,6 +35,22 @@ def TotalAccident(self, level, name, timeStart, timeEnd):
 
 
 	if(level == "Road"):
+		if name==[]:
+			for road in self.Road_Dict.values():
+			for year in precinct.Collisions_intersection.values():
+					for month in year.values():
+						sum(month['PersonKilled'])
+						len(month)
+		else:
+			for year in self.Road_Dict[name].values():
+					for month in year.values():
+						sum(month['PersonKilled'])
+						len(month)
+			    
+			    
+			    
+			    
+			    
 		for n in name:
 			for Year, Month, Collisions in self.data.Road_Dict[n]:
 				num = num + 1
