@@ -49,6 +49,7 @@ def NameCheck(availableSet,Input):
             else:
                 print('Invalid Input!')
                 return -2
+
 def FirstCheck(availableSet,Input):
     if Input=='Help':
         HelpMainCall()

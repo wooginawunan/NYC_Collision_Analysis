@@ -11,11 +11,13 @@ Copyright:
 #if __name__ == '__main__':
 
 from .Interaction_Modules  import ProgramIntroduction
-from .Interaction_Modules import Mainmenu
+from .Interaction_Modules import Mainmenu,SetTimeInterval
+import os
 if __name__ == "WN_User_Interact":
      
     ProgramIntroduction()
-    Mainmenu()
+    TimeBegin,TimeEnd, SavePath = SetTimeInterval()
+    
     
     
     

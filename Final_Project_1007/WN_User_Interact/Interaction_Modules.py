@@ -43,7 +43,7 @@ def ProgramIntroduction():
     print("...")
     print("Exit by input : Exit")
     print("Now you can begin with it.")
-def SetTimeInterval(savepath):
+def SetTimeInterval():
     print("You can set a period for data loading and structure building.")
     print('ALL following analysis will be based on this period.')
     print('Results will be save in a folder named by this period under results folder.')
@@ -51,6 +51,8 @@ def SetTimeInterval(savepath):
     
     while True:
         try:
+            savepath=os.getcwd()
+            savepath=''.join([savepath,'/results/'])
             print("Longest Time Interval is 201501-201612.")
             begintime=input('Please input the beginning date (Format: YYYYMM, Example: 201501):')
             if begintime=='Exit':
@@ -65,16 +67,14 @@ def SetTimeInterval(savepath):
             else:
                 shutil.rmtree(path)
                 os.makedirs(path)
+            Mainmenu(TimeBegin,TimeEnd,path)
             return TimeBegin,TimeEnd, path
         except DATEEndBeforeBegin:
             print("Begining date should not later than ending date!")
         except InvalidDate:
             print("Invalid Input!")
     
-def Mainmenu():
-    SavePath_ALL=os.getcwd()
-    SavePath_ALL=''.join([SavePath_ALL,'/results/'])
-    TimeBegin,TimeEnd, SavePath = SetTimeInterval(SavePath_ALL)
+def Mainmenu(TimeBegin,TimeEnd,SavePath):
     NYC = StructureBuilding(TimeBegin,TimeEnd)
     #print(NYC.Borough_Dict)
     print("There are three types of information: \n 1-CollisionSituation \n 2-CollisionContributingFactors_Vehicle \n 3-CollisionSimulation")
@@ -86,23 +86,29 @@ def Mainmenu():
     inputset=MenuInformation.keys()
     InformationType = InputCheck(inputset, InformationType)
     if InformationType>0:
-        MenuInformation[InformationType](NYC,SavePath)
-    else:  
-        MenuInformation[InformationType]()
-    #MenuInformation[InformationType](NYC) if InformationType>0 else MenuInformation[InformationType]()
-def CollisionContributingFactors_Vehicle(NYC,SavePath):
-    Interaction=Contributing_Interaction(NYC)
+        MenuInformation[InformationType](NYC,SavePath,TimeBegin,TimeEnd)
+    else:
+        if InformationType==-1:
+            MenuInformation[InformationType]()
+        else:
+            MenuInformation[InformationType](TimeBegin,TimeEnd,SavePath)
+            
+            
+def CollisionContributingFactors_Vehicle(NYC,SavePath,TimeBegin,TimeEnd):
+    Interaction=Contributing_Interaction(NYC,SavePath,TimeBegin,TimeEnd)
     Level,Method,name,nameFlag=Interaction.Level_selection()
     
-def CollisionSituation(NYC,SavePath):
-    Interaction=Situation_Interaction(NYC,SavePath)
+def CollisionSituation(NYC,SavePath,TimeBegin,TimeEnd):
+    Interaction=Situation_Interaction(NYC,SavePath,TimeBegin,TimeEnd)
     Level,Method,name,nameFlag=Interaction.Level_selection()
 
 class Situation_Interaction():
-    def __init__(self,NYC,SavePath):
+    def __init__(self,NYC,SavePath,TimeBegin,TimeEnd):
         self.menu=MethodsMenu_Situation()
         self.data=NYC
         self.SavePath=SavePath
+        self.TimeBegin=TimeBegin
+        self.TimeEnd=TimeEnd
     def Level_selection(self,Level=[],Method=[],name=[],nameFlag=0):
         print("Available Perspectives: \n 1-City \n 2-Borough \n 3-Precinct \n 4-Highway \n 5-Tunnel \n 6-Bridge \n 7-Road")
         Level = input('Please input the number before the perspective you want to explore:')
@@ -161,33 +167,105 @@ class Situation_Interaction():
         #Level, Method, name, nameFlag=self.MethodMenu(Level) if InputName==-1 else Level, Method, name, nameFlag=self.MethodMenu(Level,[],InputName,1)
             
         return Level, Method, name, nameFlag
+    def ChooseIndicator(self):
+        print('Please Choose one Indicator from:')
+        for key in self.menu.Indicator.keys():
+            print(':'.join([str(key),self.menu.Indicator[key]]))
+        while True:
+            try:
+                Indicator = input("Your choice: ") 
+                Indicator = FirstCheck(list(map(lambda x:str(x), self.menu.Indicator.keys())),Indicator)
+                return Indicator
+            except InvalidFirst:
+                pass
+    
     def MethodPresent(self,Level,Method=[],name=[],nameFlag=0):
-        self.menu.FunctionINIT_Situation(self.data,self.SavePath)
-        self.menu.FunctionList[Method](Level,name)
-        Level, Method, name, nameFlag=self.MethodMenu(Level,[],name,nameFlag)
-        return Level, Method, name, nameFlag
+        self.menu.FunctionINIT_Situation(self.data,self.SavePath,self.TimeBegin,self.TimeEnd)
+        if Method!=3:
+            try:
+                Indicator=self.ChooseIndicator()
+                self.menu.FunctionList[Method](Indicator,Level,name)
+                return self.MethodPresent(Level, Method, name, nameFlag)
+            except GoingBack:
+                Level, Method, name, nameFlag=self.MethodMenu(Level,[],name,nameFlag)
+                return Level, Method, name, nameFlag
+        else:
+            self.menu.FunctionList[Method](Level,name)
+            Level, Method, name, nameFlag=self.MethodMenu(Level,[],name,nameFlag)
+            return Level, Method, name, nameFlag
+            
+        
+
+        
+        
         
 class Contributing_Interaction(Situation_Interaction):
-    def __init__(self,NYC,SavePath):
+    def __init__(self,NYC,SavePath,TimeBegin,TimeEnd):
         self.menu=MethodMenu_Contributing()
         self.data=NYC
         self.SavePath=SavePath
+        self.TimeBegin=TimeBegin
+        self.TimeEnd=TimeEnd
     def MethodPresent(self,Level,Method=[],name=[],nameFlag=0):
-        self.menu.FunctionINIT_Situation(self.data,self.SavePath)
+        self.menu.FunctionINIT_Contributing(self.data,self.SavePath,self.TimeBegin,self.TimeEnd)
         Func_Menu={1: self.Influencing, 2: self.Relation}
-        Level, Method, name, nameFlag=Func_Menu(Level,Method,name,nameFlag)
+        Level, Method, name, nameFlag=Func_Menu[Method](Level,Method,name,nameFlag)
+        Level, Method, name, nameFlag=self.MethodMenu(Level,[],name,nameFlag)
         return Level, Method, name, nameFlag
-    def Influencing(self,Level,Method=[],name=[],nameFlag=0):
-        print('Please Choose one Influencer:')
-        for key in self.menu.Influencer.key():
-            print('\n'.join([key,self.menu.Influencer[key]]))
+    
+    
+    def ChooseInfluencing(self):
+        print('Please Choose one Influencer from:')
+        for key in self.menu.Influencer.keys():
+            print(':'.join([str(key),self.menu.Influencer[key]]))
+        while True:
+            try:
+                Influencer = input("Your choice: ") 
+                Influencer = FirstCheck(list(map(lambda x:str(x), self.menu.Influencer.keys())),Influencer)
+                return Influencer
+            except InvalidFirst:
+                pass
+        return Influencer
+    
+    def ChooseIndicator(self):
+        print('Please Choose one Indicator from:')
+        for key in self.menu.Indicator.keys():
+            print(':'.join([str(key),self.menu.Indicator[key]]))
+        while True:
+            try:
+                Indicator = input("Your choice: ") 
+                Indicator = FirstCheck(list(map(lambda x:str(x), self.menu.Indicator.keys())),Indicator)
+                return Indicator
+            except InvalidFirst:
+                pass
             
-        self.menu.FunctionList[Method](Influencer, SeverityMeasure, Level,name)
+        
+    def Influencing(self,Level,Method=[],name=[],nameFlag=0):
+        try:
+            Influencer = self.ChooseInfluencing()
+            try:
+                Indicator=self.ChooseIndicator()
+                self.menu.FunctionList[Method](Influencer,Indicator,Level,name)
+                return self.Influencing(Level, Method, name, nameFlag)
+            except GoingBack:
+                return self.Influencing(Level, Method, name, nameFlag)
+                
+        except GoingBack:
+            return self.MethodMenu(Level,Method,name,nameFlag)
+        
     def Relation(self,Level,Method=[],name=[],nameFlag=0):
-        self.menu.FunctionList[Method](Influencer0, Influencer1, Level,name)
+        try:
+            Influencer0 = self.ChooseInfluencing()
+            try:
+                Influencer1=self.ChooseInfluencing()
+                self.menu.FunctionList[Method](Influencer0,Influencer1,Level,name)
+                return self.Relation(Level, Method, name, nameFlag)
+            except GoingBack:
+                return self.Relation(Level, Method, name, nameFlag)
+        except GoingBack:
+            return self.MethodMenu(Level,Method,name,nameFlag)
     
 
-    
 def Borough_Specific(NYC):
     print('You can choose from:')
     Bo_Catalog=NYC.boroughCatalog()
@@ -254,13 +332,15 @@ def Highway_Specific(NYC):
         return name
 def Road_Specific(NYC):
     print('Please specify the first character of the road you want to explore.')
-    print('You can choose from ABCDEFGHIGKLMNOPQRSTUVWXYZ or *Other')
+    print('You can choose from ABCDEFGHIGKLMNOPQRSTUVWXYZ or - for others')
     
     while True:
         try:
             
-            FirstC=input('Input a CAPITAL letter or *Other: ')
-            FirstC=FirstCheck('ABCDEFGHIGKLMNOPQRSTUVWXYZ*',FirstC)
+            FirstC=input('Input a CAPITAL letter or - : ')
+            FirstC=FirstCheck('ABCDEFGHIGKLMNOPQRSTUVWXYZ-',FirstC)
+            if FirstC=='-':
+                FirstC='*Other'
             roadCata=NYC.roadCatalog()
             print('You can choose from:')
             print('\n'.join(roadCata[FirstC]))

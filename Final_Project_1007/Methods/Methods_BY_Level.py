@@ -16,7 +16,7 @@ class MethodsMenu_Situation():
         
         self.City=['1 Brief Summary','2 Plot by Time','3 InjuryKillPie']
         self.Borough_Whole=['0 Specific Insight','4 Map','6 Borough Compare']
-        self.Borough_S=['1 Brief Summary','2 Plot by Time','3 InjuryKillPie']
+        self.Borough_S=['1 Brief Summary','2 Plot by Time','3 InjuryKillPie','4 Map']
         self.Precinct_Whole=['0 Specific Insight','4 Map','5 Rank_TOP10']
         self.Precinct_S=['1 Brief Summary','2 Plot by Time','3 InjuryKillPie']
         self.BTHS_Whole=['0 Specific Insight','5 Rank_TOP10','1 Brief Summary','2 Plot by Time','3 InjuryKillPie']
@@ -27,19 +27,23 @@ class MethodsMenu_Situation():
         
         self.List.update(dict.fromkeys(['Bridge','Highway','Tunnel','Road'],{0:self.BTHS_Whole,1:self.BTHS_S}))
         self.AvailableSet={'City':{0:[1,2,3]},
-                           'Borough':{0:[0,4,6],1:[1,2,3]},
+                           'Borough':{0:[0,4,6],1:[1,2,3,4]},
                            'Precinct':{0:[0,4,5],1:[1,2,3]}}
         
         self.AvailableSet.update(dict.fromkeys(['Bridge','Highway','Tunnel','Road'],{0:[0,1,2,3,5],1:[1,2,3]}))
-    
-    def FunctionINIT_Situation(self,NYC,SavePath):
-        self.MethodFunction=SituationMethods(NYC,SavePath)
+        self.Indicator={1 : 'Number of Collisions', 2 : 'CollisionInjuredCount', 3 : 'CollisionKilledCount',4 : 'PersonsInjured',
+                        5 : 'PersonsKilled', 6 : 'MotoristsInjured', 7 : 'MotoristsKilled', 8 : 'PassengInjured', 9 : 'PassengKilled',
+                        10 : 'CyclistsInjured',11 : 'CyclistsKilled',12 : 'PedestrInjured', 13 : 'PedestrKilled',14 : 'Injury_or_Fatal'}
+    def FunctionINIT_Situation(self,NYC,SavePath,TimeBegin,TimeEnd):
+        self.MethodFunction=SituationMethods(NYC,SavePath,TimeBegin,TimeEnd)
         self.FunctionList={1:self.MethodFunction.briefSummary,
                            2:self.MethodFunction.PlotbyMonth,
                            3:self.MethodFunction.InjuryKillPIE,
                            4:self.MethodFunction.Map,
                            5:self.MethodFunction.RankTop10,
                            6:self.MethodFunction.BoroughCompare}
+
+
 class MethodMenu_Contributing():
     def __init__(self):
         '''
@@ -59,13 +63,13 @@ class MethodMenu_Contributing():
                            'Precinct':{0:[0],1:[1,2]}}
         
         self.AvailableSet.update(dict.fromkeys(['Bridge','Highway','Tunnel','Road'],{0:[0,1,2],1:[1,2]}))
-        self.Influencer=['1 : VehicleType','2 : ContributingFactor' ,'3 : CollisionVehicleCount']
-        self.Indicator={1 : 'Number of Collisions',2 : 'CollisionInjuredCount',3 : 'CollisionKilledCount',4 : 'PersonsInjured',
-                        5 : 'PersonsKilled',6 : 'MotoristsInjured',7 : 'MotoristsKilled','8 : 'PassengInjured',9 : 'PassengKilled',
-                        10 : 'CyclistsInjured',11 : 'CyclistsKilled',12 : 'PedestrInjured',13 : 'PedestrKilled',14 : 'Injury_or_Fatal'}
+        self.Influencer={1 : 'VehicleType',2 : 'ContributingFactor' ,3 : 'CollisionVehicleCount'}
+        self.Indicator={1 : 'Number of Collisions', 2 : 'CollisionInjuredCount', 3 : 'CollisionKilledCount',4 : 'PersonsInjured',
+                        5 : 'PersonsKilled', 6 : 'MotoristsInjured', 7 : 'MotoristsKilled', 8 : 'PassengInjured', 9 : 'PassengKilled',
+                        10 : 'CyclistsInjured',11 : 'CyclistsKilled',12 : 'PedestrInjured', 13 : 'PedestrKilled',14 : 'Injury_or_Fatal'}
         
-    def FunctionINIT_Contributing(self,NYC,SavePath):
-        self.MethodFunction=ContributingMethods(NYC,SavePath)
+    def FunctionINIT_Contributing(self,NYC,SavePath,TimeBegin,TimeEnd):
+        self.MethodFunction=ContributingMethods(NYC,SavePath,TimeBegin,TimeEnd)
         self.FunctionList={1:self.MethodFunction.InfluenceONSeverity,
                            2:self.MethodFunction.RelationshipBetweenInfluencer}       
         
