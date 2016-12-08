@@ -5,23 +5,7 @@ Created on Dec 2, 2016
 '''
 import datetime
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
 from WN_struct_building.CityStructure import borough
-from matplotlib.patches import Polygon
-from matplotlib.collections import PatchCollection
-from mpl_toolkits.basemap import Basemap
-
-
-'''
-References:
-http://stackoverflow.com/questions/6028675/setting-color-range-in-matplotlib-patchcollection
-http://basemaptutorial.readthedocs.io/en/latest/shapefile.html
-Shapefile source:
-https://nycopendata.socrata.com/Public-Safety/Police-Precincts/78dh-3ptz/data
-'''
-
 class FundamentalMethods():
     '''
     classdocs
@@ -373,74 +357,9 @@ class SituationMethods(FundamentalMethods):
     def InjuryKillPIE(self,level,name='null'):
         pass
     def Map(self,Indicator,level,name='null'):
-        
-        '''
-        This function plots a heatmap for numbers of collision happen in each area.
-        The function takes three inputs:
-        level: string type. 'borough' or 'precinct'
-        name: string type. Borough name. 'mn' for Manhattan, 'bk' for Brooklyn, 'bn' for Bronx, 'si' for 'Staten Island', 'qn' for Queens
-        indicator: string type. The metrics that the user would like to use, such as 'number of people injured' or 'collision'
-        '''
-        # Create map related variables
-        fig, ax = plt.subplots()
-        patches = []
-        color_list = []
-        # Draw a basemap according to the geographic level
-        mapbase = Basemap(projection='mill',
-                          llcrnrlat = 40.492,
-                          llcrnrlon = -74.272,
-                          urcrnrlat = 40.930,
-                          urcrnrlon = -73.670,
-                          resolution='c')
-                          mapbase.fillcontinents(color='white')
-        mapbase.fillcontinents(color='white')
-                      
-        # Call TableDICT method to extract data
+        pass
         self.TableDICT_Init()
-
-        # if 'borough' level and name of the borough are not specified, then plots a heatmap for NYC by boroughs.
-        if (level == 'borough') and (name == 'null'):
-            df = self.Table_Dict[level](Indicator)
-            mapbase.readshapefile('BoroughBound/boroughshape', 'boroughmaps', drawbounds=True)
-            for i in range(len(mapbase.boroughmaps)):
-                info = mapbase.boroughmaps_info[i]
-                shape = mapbase.boroughmaps[i]
-                area = str(info['boro_name'])
-                plot_series = df.sum()
-                if area in plot_series.index:
-                    color_list.append(plot_series.loc[area])
-                    polygons = Polygon(np.array(shape), True)
-                    patches.append(polygons)
-
-        # if 'precinct' level, then load the precinct map
-        elif level == 'precinct':
-        mapbase.readshapefile('PrecinctBound/precinctshape', 'precinctmaps', drawbounds=True)
-            # if plot precincts for the whole city
-            ## TODO: Double check inputs with Gina
-            if name in ['Manhattan', 'Brooklyn', 'Bronx', 'Queens', 'Staten Island']:
-                df = self.Table_Dict[level](Indicator, name)
-            # if plot precincts for only one borough
-            elif name == 'null':
-                df = self.Table_Dict[level](Indicator)
-            # Sum the data frame by column
-            plot_series = df.sum()
-                
-            for i in range(len(mapbase.precinctmaps)):
-                info = mapbase.precinctmaps_info[i]
-                shape = mapbase.precinctmaps[i]
-                area = str(int(info['precinct']))
-                
-                if area in plot_series.index:
-                    color_list.append(plot_series.loc[area])
-                    polygons = Polygon(np.array(shape), True)
-                    patches.append(polygons)
-
-        colors = np.array(color_list)
-        polygons = PatchCollection(patches, cmap=matplotlib.cm.jet, alpha=0.5)
-        polygons.set_array(colors)
-        ax.add_collection(polygons)
-        plt.colorbar(polygons)
-        plt.show()
+        df=self.Table_Dict[level](Indicator,name)
         
     def BoroughCompare(self,Indicator,level,name='null'):
         pass
