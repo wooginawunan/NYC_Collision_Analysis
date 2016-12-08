@@ -109,7 +109,7 @@ class Situation_Interaction():
         self.SavePath=SavePath
         self.TimeBegin=TimeBegin
         self.TimeEnd=TimeEnd
-    def Level_selection(self,Level=[],Method=[],name=[],nameFlag=0):
+    def Level_selection(self,Level='null',Method='null',name='null',nameFlag=0):
         print("Available Perspectives: \n 1-City \n 2-Borough \n 3-Precinct \n 4-Highway \n 5-Tunnel \n 6-Bridge \n 7-Road")
         Level = input('Please input the number before the perspective you want to explore:')
         Level = InputCheck(range(1,8), Level)
@@ -117,7 +117,7 @@ class Situation_Interaction():
                    -1:Mainmenu }
         LevelFlow.update(dict.fromkeys([1,2,3,4,5,6,7],self.MethodMenu))
     
-        LevelName={-2:[],1:'City',2:'Borough',3:'Precinct',4:'Highway',5:'Tunnel',6:'Bridge',7:'Road'}
+        LevelName={-2:'null',1:'City',2:'Borough',3:'Precinct',4:'Highway',5:'Tunnel',6:'Bridge',7:'Road'}
         
         if Level==-1:
             LevelFlow[Level]()
@@ -128,7 +128,7 @@ class Situation_Interaction():
         
         return Level, Method, name, nameFlag
        
-    def MethodMenu(self,Level,Method=[],name=[],nameFlag=0):
+    def MethodMenu(self,Level,Method='null',name='null',nameFlag=0):
         
         print("There are methods for this level:")
         print ('%s' % '\n'.join(self.menu.List[Level][nameFlag]))
@@ -144,13 +144,11 @@ class Situation_Interaction():
                        -1:self.SpecificInsight} #back to no name
         Flow1.update(dict.fromkeys([1,2,3,4,5,6],self.MethodPresent))
         methodFlow={0:Flow0,1:Flow1}
-        #if ((nameFlag==1) and (Method==-1)):
-        #   Level, Method, name, nameFlag = methodFlow[nameFlag][Method](Level, Method, [], 0)
-        #else:
+    
         Level, Method, name, nameFlag = methodFlow[nameFlag][Method](Level, Method, name, nameFlag)
         
         return Level, Method, name, nameFlag
-    def SpecificInsight(self,Level,Method=[],name=[],nameFlag=0):
+    def SpecificInsight(self,Level,Method='null',name='null',nameFlag=0):
         SpecificMenu={'Borough':Borough_Specific,
                       'Precinct':Precinct_Specific,
                       'Highway':Highway_Specific,
@@ -162,7 +160,7 @@ class Situation_Interaction():
         if InputName==-1:
             Level, Method, name, nameFlag=self.MethodMenu(Level)
         else:
-            Level, Method, name, nameFlag=self.MethodMenu(Level,[],InputName,1)
+            Level, Method, name, nameFlag=self.MethodMenu(Level,'null',InputName,1)
             
         #Level, Method, name, nameFlag=self.MethodMenu(Level) if InputName==-1 else Level, Method, name, nameFlag=self.MethodMenu(Level,[],InputName,1)
             
@@ -179,7 +177,7 @@ class Situation_Interaction():
             except InvalidFirst:
                 pass
     
-    def MethodPresent(self,Level,Method=[],name=[],nameFlag=0):
+    def MethodPresent(self,Level,Method='null',name='null',nameFlag=0):
         self.menu.FunctionINIT_Situation(self.data,self.SavePath,self.TimeBegin,self.TimeEnd)
         if Method!=3:
             try:
@@ -187,11 +185,11 @@ class Situation_Interaction():
                 self.menu.FunctionList[Method](Indicator,Level,name)
                 return self.MethodPresent(Level, Method, name, nameFlag)
             except GoingBack:
-                Level, Method, name, nameFlag=self.MethodMenu(Level,[],name,nameFlag)
+                Level, Method, name, nameFlag=self.MethodMenu(Level,'null',name,nameFlag)
                 return Level, Method, name, nameFlag
         else:
             self.menu.FunctionList[Method](Level,name)
-            Level, Method, name, nameFlag=self.MethodMenu(Level,[],name,nameFlag)
+            Level, Method, name, nameFlag=self.MethodMenu(Level,'null',name,nameFlag)
             return Level, Method, name, nameFlag
             
         
@@ -206,11 +204,11 @@ class Contributing_Interaction(Situation_Interaction):
         self.SavePath=SavePath
         self.TimeBegin=TimeBegin
         self.TimeEnd=TimeEnd
-    def MethodPresent(self,Level,Method=[],name=[],nameFlag=0):
+    def MethodPresent(self,Level,Method='null',name='null',nameFlag=0):
         self.menu.FunctionINIT_Contributing(self.data,self.SavePath,self.TimeBegin,self.TimeEnd)
         Func_Menu={1: self.Influencing, 2: self.Relation}
         Level, Method, name, nameFlag=Func_Menu[Method](Level,Method,name,nameFlag)
-        Level, Method, name, nameFlag=self.MethodMenu(Level,[],name,nameFlag)
+        Level, Method, name, nameFlag=self.MethodMenu(Level,'null',name,nameFlag)
         return Level, Method, name, nameFlag
     
     
@@ -240,7 +238,7 @@ class Contributing_Interaction(Situation_Interaction):
                 pass
             
         
-    def Influencing(self,Level,Method=[],name=[],nameFlag=0):
+    def Influencing(self,Level,Method='null',name='null',nameFlag=0):
         try:
             Influencer = self.ChooseInfluencing()
             try:
@@ -253,7 +251,7 @@ class Contributing_Interaction(Situation_Interaction):
         except GoingBack:
             return self.MethodMenu(Level,Method,name,nameFlag)
         
-    def Relation(self,Level,Method=[],name=[],nameFlag=0):
+    def Relation(self,Level,Method='null',name='null',nameFlag=0):
         try:
             Influencer0 = self.ChooseInfluencing()
             try:
