@@ -6,6 +6,12 @@ Created on Dec 2, 2016
 import datetime
 import pandas as pd
 from WN_struct_building.CityStructure import borough
+import matplotlib.pyplot as plt
+import numpy as np
+from textwrap import wrap
+from itertools import cycle, islice
+
+
 class FundamentalMethods():
     '''
     classdocs
@@ -16,10 +22,13 @@ class FundamentalMethods():
         '''
         self.data=city
         self.savepath=savepath # .../results/201501_201502
-        self.Influencer={1 : 'VehicleType',2 : 'ContributingFactor' ,3 : 'CollisionVehicleCount'}
+        self.Influencer={1 : 'VehicleType',2 : 'ContributingFactor' }
+        
         self.Indicator={1 : 'Number of Collisions', 2 : 'CollisionInjuredCount', 3 : 'CollisionKilledCount',4 : 'PersonsInjured',
                         5 : 'PersonsKilled', 6 : 'MotoristsInjured', 7 : 'MotoristsKilled', 8 : 'PassengInjured', 9 : 'PassengKilled',
                         10 : 'CyclistsInjured',11 : 'CyclistsKilled',12 : 'PedestrInjured', 13 : 'PedestrKilled',14 : 'Injury_or_Fatal'}
+        self.InfluencerDes={1:'VehicleTypeDescription',2:'ContributingFactorDescription'}
+        
         self.TimeBegin=TimeBegin
         self.TimeEnd=TimeEnd # [2015,1]
         start=datetime.date(self.TimeBegin[0],self.TimeBegin[1],20)
@@ -28,9 +37,11 @@ class FundamentalMethods():
         self.TimeList=list(map(lambda date:str(date.year)+str(date.month).zfill(2), ALLDATE))
         
 class SituationMethods(FundamentalMethods):
+    
     def TableDICT_Init(self):
         self.Table_Dict={'City':self.CityTable,'Borough': self.BoroughTable,'Precinct':self.PrecinctTable,'Highway':self.HighwayTable,'Tunnel':self.TunnelTable,'Bridge':self.BridgeTable,'Road':self.RoadTable}
-    
+        
+        
     def CityTable(self,Indicator,name='null'):
         '''
         Out Put Same as the CityTableUnit
@@ -111,9 +122,12 @@ class SituationMethods(FundamentalMethods):
         '''
         table_0=dict.fromkeys(self.TimeList,0)
         for time in table_0.keys():
-            table_0[time]=self.PrecinctCalculate(Indicator, 
+            try:
+                table_0[time]=self.PrecinctCalculate(Indicator, 
                                                  Precinct.Collisions_intersection[time[0:4]][time[4:6]], 
                                                  Precinct.Collisions_HighTunBri[time[0:4]][time[4:6]])
+            except KeyError:
+                pass
         table=pd.DataFrame(pd.Series(table_0),columns=[Precinct.ID])
         return table
     def BoroughTableUnit(self,Borough,Indicator):
@@ -202,7 +216,10 @@ class SituationMethods(FundamentalMethods):
         '''
         table_0=dict.fromkeys(self.TimeList,0)
         for time in table_0.keys():
-            table_0[time]=self.BTHRcalculate(Indicator, BTHR.Collisions[time[0:4]][time[4:6]])
+            try:
+                table_0[time]=self.BTHRcalculate(Indicator, BTHR.Collisions[time[0:4]][time[4:6]])
+            except KeyError:
+                pass
         table=pd.DataFrame(pd.Series(table_0),columns=[BTHR.name])
         return table
     def PrecinctTableAll(self,precinct_List,Indicator):
@@ -369,7 +386,193 @@ class SituationMethods(FundamentalMethods):
 
 
 class ContributingMethods(FundamentalMethods):
-    def InfluenceONSeverity(self,Influencer,SeverityMeasure,level,name='null'):
-        pass
-    def RelationshipBetweenInfluencer(self, Influencer0, Influencer1,level,name='null'):
-        pass     
+    '''
+    
+    '''
+    
+    def InfCalculate(self,indicator,influencer,Collisions,Factors):
+        if indicator==1:
+            df=Factors[[self.InfluencerDes[influencer],'CollisionKey']].groupby([self.InfluencerDes[influencer]])['CollisionKey'].unique()
+            return pd.DataFrame(pd.Series(map(lambda x:len(x),df),index=df.index),columns=[self.Indicator[1]])
+        else:
+            df=pd.merge(Factors[[self.InfluencerDes[influencer],'CollisionKey']],Collisions[[self.Indicator[indicator],'CollisionKey']], how='left', on='CollisionKey')
+            return pd.DataFrame(df.groupby([self.InfluencerDes[influencer]])[self.Indicator[indicator]].sum())
+    
+    def precinctInfTable_Unit(self,precinct,indicator,influencer):
+        table=pd.DataFrame(np.zeros(len(self.index[influencer])),index=self.index[influencer],columns=[self.Indicator[indicator]])
+        for time in self.TimeList:
+            try:
+                Collisions_i = precinct.Collisions_intersection[time[0:4]][time[4:6]]
+                Factors_i = precinct.Factors_intersection[time[0:4]][time[4:6]]
+                table=table.add(self.InfCalculate(indicator,influencer,Collisions_i,Factors_i),fill_value=0)
+                try:
+                    Collisions_H = precinct.Collisions_HighTunBri[time[0:4]][time[4:6]]
+                    Factors_H = precinct.Factors_HighTunBri[time[0:4]][time[4:6]]
+                    table=table.add(self.InfCalculate(indicator,influencer,Collisions_H,Factors_H),fill_value=0)
+                except KeyError:
+                    pass
+            except KeyError:
+                try:
+                    Collisions_H = precinct.Collisions_HighTunBri[time[0:4]][time[4:6]]
+                    Factors_H = precinct.Factors_HighTunBri[time[0:4]][time[4:6]]
+                    table=table.add(self.InfCalculate(indicator,influencer,Collisions_H,Factors_H),fill_value=0)
+                except KeyError:
+                    pass
+        return table
+                
+                
+        
+    def BTHRInfTable_Unit(self,BTHR,indicator,influencer):
+        table=pd.DataFrame(np.zeros(len(self.index[influencer])),index=self.index[influencer],columns=[self.Indicator[indicator]])
+        for time in self.TimeList:
+            try:
+                Collisions = BTHR.Collisions[time[0:4]][time[4:6]]
+                Factors = BTHR.Factors[time[0:4]][time[4:6]]
+                table = table.add(self.InfCalculate(indicator,influencer,Collisions,Factors),fill_value=0)
+            except KeyError:
+                pass
+        return table
+    def BTHRInfTable_All(self,BTHR_Dict,indicator,influencer):
+        table=pd.DataFrame(np.zeros(len(self.index[influencer])),index=self.index[influencer],columns=[self.Indicator[indicator]])
+        for BTHR in BTHR_Dict.values():
+            table = table.add(self.BTHRInfTable_Unit(BTHR, indicator, influencer),fill_value=0)
+        return table
+    def BoroughInfTable_Unit(self,borough,indicator,influencer):
+        table=pd.DataFrame(np.zeros(len(self.index[influencer])),index=self.index[influencer],columns=[self.Indicator[indicator]])
+        for precinct in borough.precinctList.values():
+            table = table.add(self.precinctInfTable_Unit(precinct,indicator,influencer),fill_value=0)
+        return table
+    def CityInfTable_Unit(self,city,indicator,influencer):
+        table=pd.DataFrame(np.zeros(len(self.index[influencer])),index=self.index[influencer],columns=[self.Indicator[indicator]])
+        for borough in city.Borough_Dict.values():
+            table = table.add(self.BoroughInfTable_Unit(borough,indicator,influencer),fill_value=0)
+        return table
+    
+    
+    
+    
+    def precinctInfTable(self,Influencer,Indicator,name):
+        if name!='null':
+            #name not null (is one of keys, could be call)
+            #call the function Unit
+            for borough in self.data.Borough_Dict.values():
+                if name in borough.precinctList.keys():
+                    return self.precinctInfTable_Unit(borough.precinctList[name],Indicator,Influencer)
+        else:
+            print("This method could not be applied on not a specific precinct!")
+               
+    def boroughInfTable(self,Influencer,Indicator,name):
+        return self.precinctInfTable_Unit(self.data.Borough_Dict[name], Indicator, Influencer)
+    
+    def cityInfTable(self,Influencer,Indicator,name='null'):
+        return self.CityInfTable_Unit(self.data, Indicator, Influencer)
+    
+    def BridgeInfTable(self,Influencer,Indicator,name='null'):
+        try:
+            #name not null (is one of keys, could be call)
+            #call the function Unit
+            return self.BTHRInfTable_Unit(self.data.Bridge_Dict[name], Indicator,Influencer) 
+        except KeyError:
+            #name is null (is not one of keys, could be call)
+            #call the function All
+            return self.BTHRInfTable_All(self.data.Bridge_Dict, Indicator,Influencer)
+    
+    def HighwayInfTable(self,Influencer,Indicator,name='null'):
+        try:
+            #name not null (is one of keys, could be call)
+            #call the function Unit
+            return self.BTHRInfTable_Unit(self.data.Highway_Dict[name], Indicator,Influencer) 
+        except KeyError:
+            #name is null (is not one of keys, could be call)
+            #call the function All
+            return self.BTHRInfTable_All(self.data.Highway_Dict, Indicator,Influencer)
+    def TunnelInfTable(self,Influencer,Indicator,name='null'):
+        try:
+            #name not null (is one of keys, could be call)
+            #call the function Unit
+            return self.BTHRInfTable_Unit(self.data.Tunnel_Dict[name], Indicator,Influencer) 
+        except KeyError:
+            #name is null (is not one of keys, could be call)
+            #call the function All
+            return self.BTHRInfTable_All(self.data.Tunnel_Dict, Indicator,Influencer)
+    def RoadInfTable(self,Influencer,Indicator,name='null'):
+        try:
+            #name not null (is one of keys, could be call)
+            #call the function Unit
+            return self.BTHRInfTable_Unit(self.data.Road_Dict[name], Indicator,Influencer) 
+        except KeyError:
+            #name is null (is not one of keys, could be call)
+            #call the function All
+            return self.BTHRInfTable_All(self.data.Road_Dict, Indicator,Influencer)
+        
+    
+    def InfDICT_Init(self):
+        self.Inf_Dict={'City':self.cityInfTable,'Borough': self.boroughInfTable,'Precinct':self.precinctInfTable,
+                       'Highway':self.HighwayInfTable,'Tunnel':self.TunnelInfTable,'Bridge':self.BridgeInfTable,'Road':self.RoadInfTable} 
+        self.vehicleType=['ALL-TERRAIN VEHICLE','AMBULANCE','BICYCLE','BUS','FIRE TRUCK','LARGE COM VEH(6 OR MORE TIRES)','MOTORCYCLE','PASSENGER VEHICLE','PEDICAB','PICK-UP TRUCK','SMALL COM VEH(4 TIRES)','SPORT UTILITY / STATION WAGON','TAXI VEHICLE','VAN','UNKNOWN']
+        self.ContributingFactor=['None', 'Following too closely ', 'Outside car distraction ',
+       'Alcohol involvement ', 'Driver inattention/distraction ',
+       'Unsafe lane changing ', 'Failure to yield right-of-way ',
+       'Lost consciousness ', 'Fell asleep ', 'Turning improperly ',
+       'Unsafe speed ', 'Passing too closely ',
+       'Passing or lane usage improper ', 'Driver inexperience ',
+       'Other uninvolved vehicle ', 'Backing unsafely ',
+       'Traffic control disregarded ', 'Passenger distraction ',
+       'Drugs (illegal) ', 'Pedest/bike/other pedest error ',
+       'Failure to keep right ', 'Cell phone (hand-held) ',
+       'Aggressive driving/road rage ', 'Illness ', 'Fatigued/drowsy ',
+       'Other electronic device ', 'Physical disability ',
+       'Using on board navigate device ']
+        self.index={1:self.vehicleType,2:self.ContributingFactor}
+    
+    def CloseFigure(self,figure):
+        print(1)
+        
+        self.flag= input("Input anything to Close the Figure and Continue")
+        figure.close()
+    
+    def Colorset(self,df):
+        return list(islice(cycle(['b', 'r', 'g', 'y', 'k']), None, len(df)))
+    
+    def Labelset(self,df):
+        return [ '\n'.join(wrap(l, 15)) for l in df.index ]
+    def Titleset(self,level,name):
+        return ' '.join([level,'_',name,'\n',self.TimeList[0],'to', self.TimeList[-1]] 
+                        if name!='null' else [level,'\n',self.TimeList[0],'to', self.TimeList[-1]])
+    def SavePathset(self,Influencer,Indicator):
+        return ''.join([self.savepath,'/',self.InfluencerDes[Influencer],"'effects on",self.Indicator[Indicator] ,'.pdf'])
+    def BarPlot(self,df,Influencer,Indicator,level,name):
+        
+        
+        ax = df.sort_values(by=[self.Indicator[Indicator]]).plot.bar(
+            title=self.Titleset(level, name),
+            figsize=(12, 8), 
+            legend=True, 
+            fontsize=8,
+            xticks=self.Labelset(df),
+            color=self.Colorset(df))
+        
+        ax.set_xticklabels(rotation=40)
+        
+        figure = ax.get_figure()
+        figure.subplots_adjust(bottom=0.25)
+        figure.show()
+        
+        self.CloseFigure(figure)
+        figure.savefig(self.SavePathset(Influencer, Indicator))
+        
+        print("Figure has been saved.")
+        
+    def InfluenceONSeverity(self,Influencer,Indicator,level,name='null'):
+        self.InfDICT_Init()
+        
+        self.vehicleType
+        
+        df = self.Inf_Dict[level](Influencer,Indicator,name)
+        
+        try:
+            self.BarPlot(df,Influencer,Indicator,level,name)
+        except TypeError:
+            print("No information.")
+        
+            

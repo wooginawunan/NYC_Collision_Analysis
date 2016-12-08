@@ -13,13 +13,7 @@ Copyright:
 from .Interaction_Modules  import ProgramIntroduction
 from .Interaction_Modules import Mainmenu,SetTimeInterval
 import os
-if __name__ == "WN_User_Interact":
-     
+def User_Interaction(dirname):
     ProgramIntroduction()
-    TimeBegin,TimeEnd, SavePath = SetTimeInterval()
-    
-    
-    
-    
-    
-    print('Finished!')
+    TimeBegin,TimeEnd, SavePath = SetTimeInterval(dirname)
+    print('Finish Interaction!')

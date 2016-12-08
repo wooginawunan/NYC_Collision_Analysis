@@ -11,7 +11,7 @@ class InvalidDate(Exception):
     pass
 class DATEEndBeforeBegin(Exception):
     pass
-class InvalidFirst(Exception):
-    pass
 class GoingBack(Exception):
+    pass
+class InvalidInput(Exception):
     pass

@@ -103,15 +103,17 @@ class precinct():
         Constructor
         '''
         self.ID=ID
-        dict_Month=dict()
-        self.Collisions_intersection={'2015': dict_Month,'2016': dict_Month}
-        self.Collisions_HighTunBri={'2015': dict_Month,'2016': dict_Month}
-        self.Factors_intersection={'2015': dict_Month,'2016': dict_Month}
-        self.Factors_HighTunBri={'2015': dict_Month,'2016': dict_Month}
+        self.Collisions_intersection={'2015': dict(),'2016': dict()}
+        self.Collisions_HighTunBri={'2015': dict(),'2016': dict()}
+        self.Factors_intersection={'2015': dict(),'2016': dict()}
+        self.Factors_HighTunBri={'2015': dict(),'2016': dict()}
     
-    def addCollisions_Intersection(self,year,month,collisions_I,factors_I):
+    def addCollisions_Intersection(self,year,month,collisions_I):
         self.Collisions_intersection[year][month]=collisions_I
+        
+    def addFactors_Intersection(self,year,month,factors_I):
         self.Factors_intersection[year][month]= factors_I
+        
 
     
     def addCollisions_HighTunBri(self,year,month,collisions_H,factors_H):
@@ -124,9 +126,8 @@ class precinct():
 class road():
     def __init__(self,name_road):
         self.name=name_road
-        dict_Month=dict()
-        self.Collisions={'2015': dict_Month,'2016': dict_Month}
-        self.Factors={'2015': dict_Month,'2016': dict_Month}
+        self.Collisions={'2015': dict(),'2016': dict()}
+        self.Factors={'2015': dict(),'2016': dict()}
     def addCollisions(self,year,month,collisions,factors):
         self.Collisions[year][month]=collisions
         self.Factors[year][month]= factors

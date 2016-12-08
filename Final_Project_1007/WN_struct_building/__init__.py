@@ -16,11 +16,13 @@ from inspect import getsourcefile
 from os.path import abspath
 from WN_struct_building.data_loading import load_data
 from CheckandError.DefinedError import ExitALLProgram
-def StructureBuilding(TimeBegin=[2015,1],TimeEnd=[2016,12]):
+def StructureBuilding(TimeBegin,TimeEnd,path):
     try:
         print('Loading data and initiating the system...... ')
-        DataPath=os.getcwd()
-        DataPath=''.join([DataPath,'/NYPD_DATA/'])
+        #DataPath=os.getcwd()
+        #print(DataPath)
+        
+        DataPath=''.join([path,'/NYPD_DATA/'])
         while True:
             try:
                 NYC = load_data(DataPath,TimeBegin,TimeEnd)

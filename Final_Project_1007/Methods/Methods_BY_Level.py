@@ -50,28 +50,27 @@ class MethodMenu_Contributing():
         Constructor
         '''
         
-        self.Fundamental=['1 Influence On Collision Severity','2 Relation Between Factors']
+        self.Fundamental=['1 Influence On Collision Severity']
         self.Whole=['0 Specific Insight']
-        self.BHTR=['0 Specific Insight','1 Influence On Collision Severity','2 Relation Between Factors']
+        self.BHTR=['0 Specific Insight','1 Influence On Collision Severity']
         self.List={'City':{0:self.Fundamental,1:self.Fundamental},
                    'Borough':{0:self.Whole,1:self.Fundamental},
                    'Precinct':{0:self.Whole,1:self.Fundamental}}
         
         self.List.update(dict.fromkeys(['Bridge','Highway','Tunnel','Road'],{0:self.BHTR,1:self.Fundamental}))
-        self.AvailableSet={'City':{0:[1,2]},
-                           'Borough':{0:[0],1:[1,2]},
-                           'Precinct':{0:[0],1:[1,2]}}
+        self.AvailableSet={'City':{0:[1]},
+                           'Borough':{0:[0],1:[1]},
+                           'Precinct':{0:[0],1:[1]}}
         
         self.AvailableSet.update(dict.fromkeys(['Bridge','Highway','Tunnel','Road'],{0:[0,1,2],1:[1,2]}))
-        self.Influencer={1 : 'VehicleType',2 : 'ContributingFactor' ,3 : 'CollisionVehicleCount'}
+        self.Influencer={1 : 'VehicleType',2 : 'ContributingFactor'}
         self.Indicator={1 : 'Number of Collisions', 2 : 'CollisionInjuredCount', 3 : 'CollisionKilledCount',4 : 'PersonsInjured',
                         5 : 'PersonsKilled', 6 : 'MotoristsInjured', 7 : 'MotoristsKilled', 8 : 'PassengInjured', 9 : 'PassengKilled',
                         10 : 'CyclistsInjured',11 : 'CyclistsKilled',12 : 'PedestrInjured', 13 : 'PedestrKilled',14 : 'Injury_or_Fatal'}
         
     def FunctionINIT_Contributing(self,NYC,SavePath,TimeBegin,TimeEnd):
         self.MethodFunction=ContributingMethods(NYC,SavePath,TimeBegin,TimeEnd)
-        self.FunctionList={1:self.MethodFunction.InfluenceONSeverity,
-                           2:self.MethodFunction.RelationshipBetweenInfluencer}       
+        self.FunctionList={1:self.MethodFunction.InfluenceONSeverity}       
         
         
         

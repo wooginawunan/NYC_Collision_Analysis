@@ -66,9 +66,10 @@ class LoadingbyStructure():
                 precinct_new=precinct(precinctID)
             else:
                 precinct_new=self.NYC.Borough_Dict[area].precinctList[precinctID]
-            precinct_new.addCollisions_Intersection(y, m, collisions_intersection.ix[collisions_intersection['OccurrencePrecinctCode']==precinctID],
-                                       factors_intersection.ix[factors_intersection['OccurrencePrecinctCode']==precinctID])
+            precinct_new.addFactors_Intersection(y, m, factors_intersection.ix[factors_intersection['OccurrencePrecinctCode']==precinctID])
+            precinct_new.addCollisions_Intersection(y, m, collisions_intersection.ix[collisions_intersection['OccurrencePrecinctCode']==precinctID])
             self.NYC.Borough_Dict[area].precinctList[precinctID]=precinct_new
+        
         for precinctID in collisions_HighTunBri['OccurrencePrecinctCode'].unique():
             if precinctID not in self.NYC.Borough_Dict[area].precinctList:
                 precinct_new=precinct(precinctID)
@@ -185,6 +186,10 @@ def load_intersection(path,y,m,area):
     factors_intersection = factors_intersection.rename(columns={'ColllisionKey':'CollisionKey'})
     factors_intersection = pd.merge(factors_intersection,collisions_intersection[['OccurrencePrecinctCode','CollisionKey']], how='left', on='CollisionKey')
     
+    factors_intersection['ContributingFactorDescription']=factors_intersection['ContributingFactorDescription'].fillna('None')
+    ContributingFactor=list(factors_intersection['ContributingFactorDescription'])
+    factors_intersection['ContributingFactorDescription']=list(map(lambda i: ContributingFactor[i].replace('\xa0', ''), range(0,len(ContributingFactor))))
+    
     return collisions_intersection,factors_intersection
     
 def load_HighTunBri(path,y,m,area):
@@ -219,6 +224,10 @@ def load_HighTunBri(path,y,m,area):
     #add OccurrencePrecinctCode to Factor information
     factors_HighTunBri = factors_HighTunBri.rename(columns={'ColllisionKey':'CollisionKey'})
     factors_HighTunBri = pd.merge(factors_HighTunBri,collisions_HighTunBri[['OccurrencePrecinctCode','CollisionKey']], how='left', on='CollisionKey')
+    
+    factors_HighTunBri['ContributingFactorDescription']=factors_HighTunBri['ContributingFactorDescription'].fillna('None')
+    ContributingFactor=list(factors_HighTunBri['ContributingFactorDescription'])
+    factors_HighTunBri['ContributingFactorDescription']=list(map(lambda i: ContributingFactor[i].replace('\xa0', ''), range(0,len(ContributingFactor))))
     
     return collisions_HighTunBri, factors_HighTunBri
             
