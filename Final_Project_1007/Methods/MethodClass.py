@@ -65,7 +65,7 @@ class SituationMethods(FundamentalMethods):
         except KeyError:
             #name is null (is not one of keys, could be call)
             #call the function All
-            return self.BoroughTableAll(self.data.Tunnel_Dict, Indicator)
+            return self.BoroughTableAll(self.data.Borough_Dict, Indicator)
     
     def PrecinctTable(self,Indicator,name='null'):
         '''
@@ -251,7 +251,7 @@ class SituationMethods(FundamentalMethods):
         ''' 
         table=pd.DataFrame(index=self.TimeList)
         for precinct in precinct_List.values():
-            table[precinct.name] = self.PrecinctTableUnit(precinct, Indicator)
+            table[precinct.ID] = self.PrecinctTableUnit(precinct, Indicator)
         return table
     def BoroughTableAll(self,Borough_Dict,Indicator):
         '''

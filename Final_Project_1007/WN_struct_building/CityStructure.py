@@ -20,7 +20,45 @@ Copyright:
 @ wooginawunan@gmail.com
 '''
 import numpy as np
+
 class city():
+    '''
+    City class
+    Contains all collision information in the city by borough, road, highway,bridge,tunnel.
+    When acquiring specific information in sub level of a city, by iterating the relevant Dictionary.
+    Attributes:
+        name: 
+            The city name (Default New York City)
+            Type: String
+        Borough_Dict: 
+            All Borough in the city. For NYC, there are 'bk': 'Brooklyn', 'bx': 'Bronx','mn':'Manhattan','qn':'Queens','si':'Staten_Island'
+            Type:Dictionary.
+                Keys: 'bk' 'mn' 'bx' 'qn' 'si' (short name for each Borough)
+                Values: borough object             
+        Road_Dict:
+            All Borough in the city. For NYC, there are 'bk': 'Brooklyn', 'bx': 'Bronx','mn':'Manhattan','qn':'Queens','si':'Staten_Island'
+            Type:Dictionary.
+                Keys: 'bk' 'mn' 'bx' 'qn' 'si' (short name for each Borough)
+                Values: borough object             
+        Highway_Dict:
+            All Borough in the city. For NYC, there are 'bk': 'Brooklyn', 'bx': 'Bronx','mn':'Manhattan','qn':'Queens','si':'Staten_Island'
+            Type:Dictionary.
+                Keys: 'bk' 'mn' 'bx' 'qn' 'si' (short name for each Borough)
+                Values: borough object             
+        Tunnel_Dict:
+            All Borough in the city. For NYC, there are 'bk': 'Brooklyn', 'bx': 'Bronx','mn':'Manhattan','qn':'Queens','si':'Staten_Island'
+            Type:Dictionary.
+                Keys: 'bk' 'mn' 'bx' 'qn' 'si' (short name for each Borough)
+                Values: borough object             
+        Bridge_Dict:
+            All Borough in the city. For NYC, there are 'bk': 'Brooklyn', 'bx': 'Bronx','mn':'Manhattan','qn':'Queens','si':'Staten_Island'
+            Type:Dictionary.
+                Keys: 'bk' 'mn' 'bx' 'qn' 'si' (short name for each Borough)
+                Values: borough object             
+    
+    Methods:
+    
+    '''
     def __init__(self,name='New York City'):
         self.name=name
         self.Borough_Dict=dict()
@@ -120,9 +158,7 @@ class precinct():
         self.Factors_HighTunBri[year][month]= factors_H
            
     
-        
-    
-class road():
+class BTHR():
     def __init__(self,name_road):
         self.name=name_road
         self.Collisions={'2015': dict(),'2016': dict()}
@@ -131,6 +167,8 @@ class road():
         self.Collisions[year][month]=collisions
         self.Factors[year][month]= factors
 
+class road():
+    
 class highway(road):
     pass
 class bridge(road):
