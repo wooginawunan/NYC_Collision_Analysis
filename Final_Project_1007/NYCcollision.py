@@ -10,7 +10,7 @@ import WN_User_Interact
 if __name__ == '__main__':
     try:
         dirname, filename = os.path.split(os.path.abspath(__file__))
-        print(dirname)
+        #print(dirname)
         WN_User_Interact.User_Interaction(dirname)
     
     except ExitALLProgram:
