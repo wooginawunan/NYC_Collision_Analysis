@@ -65,7 +65,7 @@ class SituationMethods(FundamentalMethods):
         except KeyError:
             #name is null (is not one of keys, could be call)
             #call the function All
-            return self.BTHRTableAll(self.data.Tunnel_Dict, Indicator)
+            return self.BoroughTableAll(self.data.Tunnel_Dict, Indicator)
     
     def PrecinctTable(self,Indicator,name='null'):
         '''

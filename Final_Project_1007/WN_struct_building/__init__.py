@@ -15,7 +15,7 @@ import os
 from inspect import getsourcefile
 from os.path import abspath
 from WN_struct_building.data_loading import load_data
-from CheckandError.DefinedError import ExitALLProgram
+from CheckandError.DefinedError import ExitALLProgram,WrongFilePathError
 def StructureBuilding(TimeBegin,TimeEnd,path):
     try:
         print('Loading data and initiating the system...... ')

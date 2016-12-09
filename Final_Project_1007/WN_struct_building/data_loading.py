@@ -45,6 +45,7 @@ def load_data(path,TimeBegin,TimeEnd):
             Loading.building_highway(str(date.year), str(date.month).zfill(2), area,collisions_intersection, factors_intersection,collisions_HighTunBri, factors_HighTunBri)
             Loading.building_bridge(str(date.year), str(date.month).zfill(2), area,collisions_intersection, factors_intersection,collisions_HighTunBri, factors_HighTunBri)
             Loading.building_tunnel(str(date.year), str(date.month).zfill(2), area,collisions_intersection, factors_intersection,collisions_HighTunBri, factors_HighTunBri)
+    
     print('Success...')
     
     return Loading.NYC

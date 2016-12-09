@@ -113,37 +113,37 @@ class StructureBuildingTest(unittest.TestCase):
         for Bo in self.NYC.Borough_Dict.values():
             self.assertIsInstance(Bo, borough)
             print(sorted(Bo.precinctList.keys()))
-#     def test_Precinct(self):
-#         manhatta=self.NYC.Borough_Dict['mn']
-#         for pre in manhatta.precinctList.values():
-#             self.assertIsInstance(pre, precinct)
-#             for m in [str(x).zfill(2) for x in range(1,13)]:
-#                 with self.assertRaises(KeyError):
-#                     pre.Collisions_HighTunBri['2016'][m]
-#             for m in [str(x).zfill(2) for x in range(2,13)]:
-#                 with self.assertRaises(KeyError):
-#                     pre.Collisions_HighTunBri['2015'][m]
-#             for m in [str(x).zfill(2) for x in range(1,13)]:
-#                 with self.assertRaises(KeyError):
-#                     pre.Collisions_intersection['2016'][m]
-#             for m in [str(x).zfill(2) for x in range(2,13)]:
-#                 with self.assertRaises(KeyError):
-#                     pre.Collisions_intersection['2015'][m]
-#     def test_BTHR(self):
-#         for btrh in self.NYC.Road_Dict.values():
-#             self.assertIsInstance(btrh, road)
-#             for m in [str(x).zfill(2) for x in range(1,13)]:
-#                 with self.assertRaises(KeyError):
-#                     btrh.Factors['2016'][m]
-#             for m in [str(x).zfill(2) for x in range(2,13)]:
-#                 with self.assertRaises(KeyError):
-#                     btrh.Factors['2015'][m]
-#             for m in [str(x).zfill(2) for x in range(1,13)]:
-#                 with self.assertRaises(KeyError):
-#                     btrh.Collisions['2016'][m]
-#             for m in [str(x).zfill(2) for x in range(2,13)]:
-#                 with self.assertRaises(KeyError):
-#                     btrh.Collisions['2015'][m]
+    def test_Precinct(self):
+        manhatta=self.NYC.Borough_Dict['mn']
+        for pre in manhatta.precinctList.values():
+            self.assertIsInstance(pre, precinct)
+            for m in [str(x).zfill(2) for x in range(1,13)]:
+                with self.assertRaises(KeyError):
+                    pre.Collisions_HighTunBri['2016'][m]
+            for m in [str(x).zfill(2) for x in range(2,13)]:
+                with self.assertRaises(KeyError):
+                    pre.Collisions_HighTunBri['2015'][m]
+            for m in [str(x).zfill(2) for x in range(1,13)]:
+                with self.assertRaises(KeyError):
+                    pre.Collisions_intersection['2016'][m]
+            for m in [str(x).zfill(2) for x in range(2,13)]:
+                with self.assertRaises(KeyError):
+                    pre.Collisions_intersection['2015'][m]
+    def test_BTHR(self):
+        for btrh in self.NYC.Road_Dict.values():
+            self.assertIsInstance(btrh, road)
+            for m in [str(x).zfill(2) for x in range(1,13)]:
+                with self.assertRaises(KeyError):
+                    btrh.Factors['2016'][m]
+            for m in [str(x).zfill(2) for x in range(2,13)]:
+                with self.assertRaises(KeyError):
+                    btrh.Factors['2015'][m]
+            for m in [str(x).zfill(2) for x in range(1,13)]:
+                with self.assertRaises(KeyError):
+                    btrh.Collisions['2016'][m]
+            for m in [str(x).zfill(2) for x in range(2,13)]:
+                with self.assertRaises(KeyError):
+                    btrh.Collisions['2015'][m]
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
