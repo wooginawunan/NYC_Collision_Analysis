@@ -51,7 +51,11 @@ class LoadingDataTest(unittest.TestCase):
         self.assertSequenceEqual(list(self.collisions_Intersection.columns),['OccurrencePrecinctCode', 'CollisionID', 'CollisionKey', 'Collision_ at_Intersection', 'IntersectionAddress', 'IntersectingStreet', 'CrossStreet', 'CollisionVehicleCount', 'CollisionInjuredCount', 'CollisionKilledCount', 'Vehicles_or_MotoristsInvolved', 'PersonsInjured', 'PersonsKilled', 'MotoristsInjured', 'MotoristsKilled', 'PassengInjured', 'PassengKilled', 'CyclistsInjured', 'CyclistsKilled', 'PedestrInjured', 'PedestrKilled', 'Injury_or_Fatal', 'Bicycle'])
         self.assertEqual(len(self.factors_Intersection),8124)
         self.assertSequenceEqual(list(self.collisions_HighTunBri.columns),['OccurrencePrecinctCode', 'CollisionID', 'CollisionKey', 'RoadwayTypeCode', 'RoadwayReferenceMarker', 'Collision_ at_Location', 'RoadwayName', 'RoadwayDirection', 'RoadwayLocationDescription', 'CollisionVehicleCount', 'CollisionInjuredCount', 'CollisionKilledCount', 'Vehicles_or_MotoristsInvolved', 'PersonsInjured', 'PersonsKilled', 'MotoristsInjured', 'MotoristsKilled', 'PassengInjured', 'PassengKilled', 'CyclistsInjured', 'CyclistsKilled', 'PedestrInjured', 'PedestrKilled', 'Injury_or_Fatal', 'Bicycle'])
-
+    def tearDown(self):
+       
+class StructureBuildingTest((unittest.TestCase):
+                            
+                            
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
