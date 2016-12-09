@@ -221,7 +221,7 @@ def Mainmenu(TimeBegin,TimeEnd,SavePath,NYC):
     if InformationType>0:
         MenuInformation[InformationType](NYC,SavePath,TimeBegin,TimeEnd)
     else:
-        MenuInformation[InformationType]()
+        MenuInformation[InformationType](SavePath[:-22])
                         
 def CollisionContributingFactors_Vehicle(NYC,SavePath,TimeBegin,TimeEnd):
     Interaction=Contributing_Interaction(NYC,SavePath,TimeBegin,TimeEnd)

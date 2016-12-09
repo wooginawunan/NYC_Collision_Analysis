@@ -48,7 +48,112 @@ def load_data(path,TimeBegin,TimeEnd):
     print('Success...')
     
     return Loading.NYC
+
+def FileNameSet(y,m,cORf):
+    if cORf==1:
+        if (y=='2015') & (int(m)<6):   
+            return 'hacc.xls','RoadwayCollisions-1','RoadwayVehiclesContrFactors-2'  
+        else: 
+            return 'hacc-en-us.xlsx' , 'RoadwayCollisions_1', 'RoadwayVehiclesContrFactors_2'
+    else:
+        if (y=='2015') & (int(m)<6):   
+            return 'acc.xls','IntersectCollisions-1','IntersectVehiclesContrFactors-2'
+        else: 
+            return 'acc-en-us.xlsx' , 'IntersectCollisions_1', 'IntersectVehiclesContrFactors'
+
+def FILEload(path,y,m,area,file,sheet_n1,sheet_n2,h,s):
+    collisions = pd.read_excel(''.join([path,y,'_',m,'_col_excel/',area,file]),sheetname=sheet_n1, header=h, skiprows=s)
+    factors = pd.read_excel(''.join([path,y,'_',m,'_col_excel/',area,file]),sheetname=sheet_n2, header=h, skiprows=s)
+    return collisions,factors
+
+def DescriptionCleaning(collisions,factors):
+    collisions = collisions[collisions.CollisionID.notnull()]
+    factors = factors[factors.ColllisionKey.notnull()]
+    return collisions,factors
+
+def DATAcleaning(collisions,factors):
+    collisions,factors = DescriptionCleaning(collisions,factors)
+    factors = RenameColumn(factors)
+    factors = ADDprecinctCode(factors,collisions)
+    factors = Handling_xa0(factors)
+    factors = UPPERCase(factors);
+    return collisions,factors
+
+def Handling_xa0(factors):
+    factors['ContributingFactorDescription']=factors['ContributingFactorDescription'].fillna('None')
+    ContributingFactor=list(factors['ContributingFactorDescription'])
+    factors['ContributingFactorDescription']=list(map(lambda i: ContributingFactor[i].replace('\xa0', ''), range(0,len(ContributingFactor))))
+    ContributingFactor=list(factors['ContributingFactorDescription'])
+    for i in range(0,len(ContributingFactor)):
+        if ContributingFactor[i][-1]==' ' :
+            ContributingFactor[i]=ContributingFactor[i][:-1] 
+    factors['ContributingFactorDescription']=ContributingFactor
+    return factors
+
+def RenameColumn(factors):
+    return factors.rename(columns={'ColllisionKey':'CollisionKey'})
+
+def ADDprecinctCode(factors,collisions):
+    #add OccurrencePrecinctCode to Factor information
+    return pd.merge(factors,collisions[['OccurrencePrecinctCode','CollisionKey']], how='left', on='CollisionKey')
+ 
+def UPPERCase(factors):
+    factors['VehicleTypeDescription']=factors['VehicleTypeDescription'].fillna('None')
+    factors['VehicleTypeDescription']=[z.upper() for z in factors['VehicleTypeDescription']]
+    factors['ContributingFactorDescription']=[z.upper() for z in factors['ContributingFactorDescription']]
+    return factors
+
+def load_intersection(path,y,m,area):
+    '''
+    Intersection related Data Loading
+    Args:
+       path: data path where the excel documents are stored in.
+       y: year string, format 'YYYY'
+       m: month string, format 'MM'
+       area: area short name in the name of excel documents , available set { 'bk','bx','mn','qn','si' }
+    Returns:
+       collisions_intersection: data frame  
+       factors_intersection: data frame
+    Raises: 
+       FileNotFoundError
+    '''
+    #file name set
+    file, sheet_n1, sheet_n2 = FileNameSet(y, m, 0)
+    #file reading
+    collisions_intersection,factors_intersection=FILEload(path,y,m,area,file,sheet_n1,sheet_n2,2,1)
+    
+    #data cleaning
+    collisions_intersection,factors_intersection=DATAcleaning(collisions_intersection,factors_intersection)
+    return collisions_intersection,factors_intersection
+
+def load_HighTunBri(path,y,m,area):
+    '''
+    HiggwayTunnelBridge related Data Loading
+    Args:
+       path: data path where the excel documents are stored in.
+       y: year string, format 'YYYY'
+       m: month string, format 'MM'
+       area: area short name in the name of excel documents , available set { 'bk','bx','mn','qn','si' }
+    Returns:
+       collisions_intersection: data frame  
+       factors_intersection: data frame
+    Raises: 
+       FileNotFoundError
+    '''
+    #file name set
+    file, sheet_n1, sheet_n2 = FileNameSet(y, m, 1)
+
+    #file reading
+    
+    collisions_HighTunBri, factors_HighTunBri= FILEload(path, y, m, area, file, sheet_n1, sheet_n2, 3, 1)
+    #data cleaning
+    collisions_HighTunBri, factors_HighTunBri =DATAcleaning(collisions_HighTunBri, factors_HighTunBri)
+    
+    
+    return collisions_HighTunBri, factors_HighTunBri
             
+
+
 class LoadingbyStructure():
     def __init__(self):
         self.NYC=city()
@@ -161,85 +266,4 @@ class LoadingbyStructure():
                                      factors_HighTunBri.ix[list(map(lambda x: x in Marker,factors_HighTunBri['RoadwayReferenceMarker']))]) 
             self.NYC.add_bridge(Bridge_new)
 
-
-def FileNameSet(y,m,cORf):
-    if cORf==1:
-        if (y=='2015') & (int(m)<6):   
-            return 'hacc.xls','RoadwayCollisions-1','RoadwayVehiclesContrFactors-2'  
-        else: 
-            return 'hacc-en-us.xlsx' , 'RoadwayCollisions_1', 'RoadwayVehiclesContrFactors_2'
-    else:
-        if (y=='2015') & (int(m)<6):   
-            return 'acc.xls','IntersectCollisions-1','IntersectVehiclesContrFactors-2'
-        else: 
-            return 'acc-en-us.xlsx' , 'IntersectCollisions_1', 'IntersectVehiclesContrFactors'
-
-def FILEload(path,y,m,area,file,sheet_n1,sheet_n2,h,s):
-    collisions = pd.read_excel(''.join([path,y,'_',m,'_col_excel/',area,file]),sheetname=sheet_n1, header=h, skiprows=s)
-    factors = pd.read_excel(''.join([path,y,'_',m,'_col_excel/',area,file]),sheetname=sheet_n2, header=h, skiprows=s)
-    return collisions,factors
-
-def DATAcleaning(collisions,factors):
-    
-    collisions = collisions [collisions.CollisionID.notnull()]
-    factors = factors[factors.ColllisionKey.notnull()]
-    #add OccurrencePrecinctCode to Factor information
-    
-    factors = factors.rename(columns={'ColllisionKey':'CollisionKey'})
-    factors = pd.merge(factors,collisions[['OccurrencePrecinctCode','CollisionKey']], how='left', on='CollisionKey')
-    
-    factors['ContributingFactorDescription']=factors['ContributingFactorDescription'].fillna('None')
-    ContributingFactor=list(factors['ContributingFactorDescription'])
-    factors['ContributingFactorDescription']=list(map(lambda i: ContributingFactor[i].replace('\xa0', ''), range(0,len(ContributingFactor))))
-    return collisions,factors
-    
-def load_intersection(path,y,m,area):
-    '''
-    Intersection related Data Loading
-    Args:
-       path: data path where the excel documents are stored in.
-       y: year string, format 'YYYY'
-       m: month string, format 'MM'
-       area: area short name in the name of excel documents , available set { 'bk','bx','mn','qn','si' }
-    Returns:
-       collisions_intersection: data frame  
-       factors_intersection: data frame
-    Raises: 
-       FileNotFoundError
-    '''
-    #file name set
-    file, sheet_n1, sheet_n2 = FileNameSet(y, m, 0)
-    #file reading
-    collisions_intersection,factors_intersection=FILEload(path,y,m,area,file,sheet_n1,sheet_n2,2,1)
-    
-    #data cleaning
-    collisions_intersection,factors_intersection=DATAcleaning(collisions_intersection,factors_intersection)
-    return collisions_intersection,factors_intersection
-
-def load_HighTunBri(path,y,m,area):
-    '''
-    HiggwayTunnelBridge related Data Loading
-    Args:
-       path: data path where the excel documents are stored in.
-       y: year string, format 'YYYY'
-       m: month string, format 'MM'
-       area: area short name in the name of excel documents , available set { 'bk','bx','mn','qn','si' }
-    Returns:
-       collisions_intersection: data frame  
-       factors_intersection: data frame
-    Raises: 
-       FileNotFoundError
-    '''
-    #file name set
-    file, sheet_n1, sheet_n2 = FileNameSet(y, m, 1)
-
-    #file reading
-    
-    collisions_HighTunBri, factors_HighTunBri= FILEload(path, y, m, area, file, sheet_n1, sheet_n2, 3, 1)
-    #data cleaning
-    collisions_HighTunBri, factors_HighTunBri =DATAcleaning(collisions_HighTunBri, factors_HighTunBri)
-    
-    
-    return collisions_HighTunBri, factors_HighTunBri
-            
 

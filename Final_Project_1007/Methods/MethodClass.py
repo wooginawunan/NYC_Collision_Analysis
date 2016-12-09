@@ -14,15 +14,8 @@ from textwrap import wrap
 from itertools import cycle, islice
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
-<<<<<<< HEAD
 import mpl_toolkits 
 from mpl_toolkits.basemap import Basemap
-
-=======
-from mpl_toolkits.basemap import Basemap
->>>>>>> branch 'master' of https://github.com/wooginawunan/NYC_Collision_Analysis.git
-
-
 
 class FundamentalMethods():
     '''
@@ -163,7 +156,7 @@ class SituationMethods(FundamentalMethods):
         table_0=dict.fromkeys(self.TimeList,0)
         for time in table_0.keys():
             for precinct in Borough.precinctList.values():
-                table_0[time]=table_0[time]+self.PrecinctTableUnit(precinct, Indicator).ix[time]
+                table_0[time]=table_0[time]+(self.PrecinctTableUnit(precinct, Indicator).ix[time])[0]
         table=pd.DataFrame(pd.Series(table_0),columns=[Borough.name])
         return table
     
@@ -190,7 +183,7 @@ class SituationMethods(FundamentalMethods):
         table_0=dict.fromkeys(self.TimeList,0)
         for time in table_0.keys():
             for borough in City.Borough_Dict.values():
-                table_0[time]=table_0[time]+self.BoroughTableUnit(borough, Indicator).ix[time]
+                table_0[time]=table_0[time]+(self.BoroughTableUnit(borough, Indicator).ix[time])[0]
         table=pd.DataFrame(pd.Series(table_0),columns=[City.name])
         return table
     def BTHRcalculate(self,Indicator,df):
@@ -204,7 +197,7 @@ class SituationMethods(FundamentalMethods):
         
         Raise:
         '''
-        if Indicator==-1:
+        if Indicator==1:
             return len((df['CollisionKey'].unique()))
         else:
             return df[self.Indicator[Indicator]].sum()
@@ -379,7 +372,7 @@ class SituationMethods(FundamentalMethods):
        # return Table
     def briefSummary(self,Indicator,level,name='null'):
         self.TableDICT_Init()
-        print(self.Table_Dict(level)(Indicator,name))
+        print(self.Table_Dict[level](Indicator,name))
         #TotalAccidennt()
         #TotalInjury()
         #TotalKilled()
@@ -388,82 +381,8 @@ class SituationMethods(FundamentalMethods):
     def InjuryKillPIE(self,level,name='null'):
         pass
     def Map(self,Indicator,level,name='null'):
-<<<<<<< HEAD
-=======
-        # References:
-        # http://stackoverflow.com/questions/6028675/setting-color-range-in-matplotlib-patchcollection
-        # http://basemaptutorial.readthedocs.io/en/latest/shapefile.html
-        # Shapefile source : https://nycopendata.socrata.com/Public-Safety/Police-Precincts/78dh-3ptz/data
-        '''
-        This function plots a heatmap for numbers of collision happen in each area.
-        The function takes three inputs:
-        level: string type. 'borough' or 'precinct'
-        name: string type. Borough name. 'mn' for Manhattan, 'bk' for Brooklyn, 'bn' for Bronx, 'si' for 'Staten Island', 'qn' for Queens
-        indicator: string type. The metrics that the user would like to use, such as 'number of people injured' or 'collision'
-        '''
-        # Create map related variables
-        fig, ax = plt.subplots()
-        patches = []
-        color_list = []
-        # Draw a basemap according to the geographic level
-        mapbase = Basemap(projection='mill',
-                          llcrnrlat = 40.492,
-                          llcrnrlon = -74.272,
-                          urcrnrlat = 40.930,
-                          urcrnrlon = -73.670,
-                          resolution='c')
-        mapbase.fillcontinents(color='white')
 
-        # Call TableDICT method to extract data
-        self.TableDICT_Init()
-
-        # if 'borough' level and name of the borough are not specified, then plots a heatmap for NYC by boroughs.
-        if (level == 'borough') and (name == 'null'):
-            df = self.Table_Dict[level](Indicator)
-            mapbase.readshapefile('BoroughBound/boroughshape', 'boroughmaps', drawbounds=True)
-            # Color the map base on their value of the indicator
-            for i in range(len(mapbase.boroughmaps)):
-                info = mapbase.boroughmaps_info[i]
-                shape = mapbase.boroughmaps[i]
-                area = str(info['boro_name'])
-                plot_series = df.sum()
-                if area in plot_series.index:
-                    color_list.append(plot_series.loc[area])
-                    polygons = Polygon(np.array(shape), True)
-                    patches.append(polygons)
-
-        # if 'precinct' level, then load the precinct map
-        elif level == 'precinct':
-            mapbase.readshapefile('PrecinctBound/precinctshape', 'precinctmaps', drawbounds=True)
-            # if plot precincts for the whole city
-            ## TODO: Double check input type  with Gina
-            if name in ['Manhattan', 'Brooklyn', 'Bronx', 'Queens', 'Staten Island']:
-                df = self.Table_Dict[level](Indicator, name)
-            # if plot precincts for only one borough
-            elif name == 'null':
-                df = self.Table_Dict[level](Indicator)
-            # Sum the data frame by column
-            plot_series = df.sum()
-
-            for i in range(len(mapbase.precinctmaps)):
-                info = mapbase.precinctmaps_info[i]
-                shape = mapbase.precinctmaps[i]
-                area = str(int(info['precinct']))
-
-                if area in plot_series.index:
-                    color_list.append(plot_series.loc[area])
-                    polygons = Polygon(np.array(shape), True)
-                    patches.append(polygons)
-
-        colors = np.array(color_list)
-        polygons = PatchCollection(patches, cmap=matplotlib.cm.jet, alpha=0.5)
-        polygons.set_array(colors)
-        ax.add_collection(polygons)
-        plt.colorbar(polygons)
-        ##TODO: add title
-        plt.show()
->>>>>>> branch 'master' of https://github.com/wooginawunan/NYC_Collision_Analysis.git
-        
+  
         # References:
         # http://stackoverflow.com/questions/6028675/setting-color-range-in-matplotlib-patchcollection
         # http://basemaptutorial.readthedocs.io/en/latest/shapefile.html
@@ -669,6 +588,7 @@ class ContributingMethods(FundamentalMethods):
         self.Inf_Dict={'City':self.cityInfTable,'Borough': self.boroughInfTable,'Precinct':self.precinctInfTable,
                        'Highway':self.HighwayInfTable,'Tunnel':self.TunnelInfTable,'Bridge':self.BridgeInfTable,'Road':self.RoadInfTable} 
         self.vehicleType=['ALL-TERRAIN VEHICLE','AMBULANCE','BICYCLE','BUS','FIRE TRUCK','LARGE COM VEH(6 OR MORE TIRES)','MOTORCYCLE','PASSENGER VEHICLE','PEDICAB','PICK-UP TRUCK','SMALL COM VEH(4 TIRES)','SPORT UTILITY / STATION WAGON','TAXI VEHICLE','VAN','UNKNOWN']
+        
         self.ContributingFactor=['None', 'Following too closely ', 'Outside car distraction ',
        'Alcohol involvement ', 'Driver inattention/distraction ',
        'Unsafe lane changing ', 'Failure to yield right-of-way ',
@@ -682,6 +602,8 @@ class ContributingMethods(FundamentalMethods):
        'Aggressive driving/road rage ', 'Illness ', 'Fatigued/drowsy ',
        'Other electronic device ', 'Physical disability ',
        'Using on board navigate device ']
+        
+        self.ContributingFactor=[z.upper() for z in self.ContributingFactor]
         
         self.index={1:self.vehicleType,2:self.ContributingFactor}
     
@@ -723,6 +645,7 @@ class ContributingMethods(FundamentalMethods):
         figure.savefig(self.SavePathset(Influencer, Indicator,level,name))
         
         print("Figure has been saved.")
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         
     def InfluenceONSeverity(self,Influencer,Indicator,level,name='null'):
         self.InfDICT_Init()

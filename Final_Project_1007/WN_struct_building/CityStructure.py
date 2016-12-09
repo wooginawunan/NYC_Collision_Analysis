@@ -88,11 +88,7 @@ class borough():
         str_print="Borough Name %s \n" % self.name
         str_print = str_print + 'It has %d precincts\n' % len(self.precinctList)
         return str_print
-        '''
-        for precinct in self.precinctList:
-            str_print = str_print + str(precinct) + '\n'
-            return str_print
-            '''
+      
         
     
 class precinct():
