@@ -462,7 +462,7 @@ class ContributingMethods(FundamentalMethods):
             print("This method could not be applied on not a specific precinct!")
                
     def boroughInfTable(self,Influencer,Indicator,name):
-        return self.precinctInfTable_Unit(self.data.Borough_Dict[name], Indicator, Influencer)
+        return self.BoroughInfTable_Unit(self.data.Borough_Dict[name], Indicator, Influencer)
     
     def cityInfTable(self,Influencer,Indicator,name='null'):
         return self.CityInfTable_Unit(self.data, Indicator, Influencer)
@@ -523,19 +523,20 @@ class ContributingMethods(FundamentalMethods):
        'Aggressive driving/road rage ', 'Illness ', 'Fatigued/drowsy ',
        'Other electronic device ', 'Physical disability ',
        'Using on board navigate device ']
+        
         self.index={1:self.vehicleType,2:self.ContributingFactor}
     
-    def CloseFigure(self,figure):
+    def CloseFigure(self):
         print(1)
         
         self.flag= input("Input anything to Close the Figure and Continue")
-        figure.close()
+        plt.close()
     
     def Colorset(self,df):
-        return list(islice(cycle(['b', 'r', 'g', 'y', 'k']), None, len(df)))
+        return  [(x/(len(df)+5), x/(len(df)+5), 0.75) for x in range(len(df))]  
     
     def Labelset(self,df):
-        return [ '\n'.join(wrap(l, 15)) for l in df.index ]
+        return ['\n'.join(wrap(l, 15)) for l in df.index]
     def Titleset(self,level,name):
         return ' '.join([level,'_',name,'\n',self.TimeList[0],'to', self.TimeList[-1]] 
                         if name!='null' else [level,'\n',self.TimeList[0],'to', self.TimeList[-1]])
@@ -549,16 +550,16 @@ class ContributingMethods(FundamentalMethods):
             figsize=(12, 8), 
             legend=True, 
             fontsize=8,
-            xticks=self.Labelset(df),
-            color=self.Colorset(df))
+            color=self.Colorset(df)
+            )
         
-        ax.set_xticklabels(rotation=40)
+        ax.set_xticklabels(self.Labelset(df),rotation=40)
         
         figure = ax.get_figure()
         figure.subplots_adjust(bottom=0.25)
         figure.show()
         
-        self.CloseFigure(figure)
+        self.CloseFigure()
         figure.savefig(self.SavePathset(Influencer, Indicator))
         
         print("Figure has been saved.")
@@ -566,13 +567,12 @@ class ContributingMethods(FundamentalMethods):
     def InfluenceONSeverity(self,Influencer,Indicator,level,name='null'):
         self.InfDICT_Init()
         
-        self.vehicleType
-        
         df = self.Inf_Dict[level](Influencer,Indicator,name)
         
         try:
             self.BarPlot(df,Influencer,Indicator,level,name)
         except TypeError:
             print("No information.")
+            raise
         
             

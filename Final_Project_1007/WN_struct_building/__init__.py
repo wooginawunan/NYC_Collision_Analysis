@@ -34,5 +34,5 @@ def StructureBuilding(TimeBegin,TimeEnd,path):
                     raise ExitALLProgram               
     except EOFError:
         pass
-#StructureBuilding([2015,1],[2015,1])
+
     

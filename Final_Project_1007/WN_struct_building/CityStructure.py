@@ -1,9 +1,12 @@
 '''
-structure of the city
+When loading the files, we directly take informations grouped by area and other geo level to build a city structure.
+structure of the city.
+All information is stored by a City object.
+
 Class:
-city
+  city
   borough
-    precinct
+  precinct
   road
   highway
   bridge
@@ -139,38 +142,6 @@ class bridge(road):
 class tunnel(road):
     pass
 
-# class highway():
-#     def __init__(self,name_highway):
-#         self.name=name_highway
-#         dict_Month=dict()
-#         self.Collisions={'2015': dict_Month,'2016': dict_Month}
-#         self.Factors={'2015': dict_Month,'2016': dict_Month}
-#     def addCollisions(self,year,month,collisions,factors):
-#         self.Collisions[year][month]=collisions
-#         self.Factors[year][month]= factors
-#         
-#     
-# class bridge():
-#     def __init__(self,name_bridge):
-#         self.name=name_bridge
-#         dict_Month=dict()
-#         self.Collisions={'2015': dict_Month,'2016': dict_Month}
-#         self.Factors={'2015': dict_Month,'2016': dict_Month}
-#     def addCollisions(self,year,month,collisions,factors):
-#         self.Collisions[year][month]=collisions
-#         self.Factors[year][month]= factors
-# 
-# class tunnel():
-#     def __init__(self,name_tunnel):
-#         self.name=name_tunnel
-#         dict_Month=dict()
-#         self.Collisions={'2015': dict_Month,'2016': dict_Month}
-#         self.Factors={'2015': dict_Month,'2016': dict_Month}
-#     def addCollisions(self,year,month,collisions,factors):
-#         self.Collisions[year][month]=collisions
-#         self.Factors[year][month]= factors
-#         
-#         
         
         
         
