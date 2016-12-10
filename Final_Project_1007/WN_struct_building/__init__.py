@@ -14,14 +14,21 @@ import sys
 import os
 from inspect import getsourcefile
 from os.path import abspath
-from WN_struct_building.data_loading import load_data
+from WN_struct_building.LoadingANDBuilding import load_data
 from CheckandError.DefinedError import ExitALLProgram,WrongFilePathError
 def StructureBuilding(TimeBegin,TimeEnd,path):
+    '''
+    Args:
+        TimeBegin: Loading data from. format:[YYYY,M] example:[2015,1]
+        TimeEnd: Loading data end in. format:[YYYY,M] example:[2016,2]
+        path: data path
+    return:
+        city object
+    Raise:
+        FileNotFoundError
+    '''
     try:
         print('Loading data and initiating the system...... ')
-        #DataPath=os.getcwd()
-        #print(DataPath)
-        
         DataPath=''.join([path,'/NYPD_DATA/'])
         while True:
             try:

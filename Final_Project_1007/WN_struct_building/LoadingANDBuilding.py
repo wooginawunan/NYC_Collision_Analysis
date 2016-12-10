@@ -1,18 +1,25 @@
 '''
 This module loads in all NYPD collisions data into a City class.
-Main function:
+functions:
 load_data
-  global variable:
-      NYC 
-      year, y
-      month, m
-      area_name. area
-  sub functions:
-      building_borough
-      building_road
-      building_bridge
-      building_tunnel
-      building_highway
+  load_intersection
+  load_HighTunBri
+    FileNameSet
+    FILEload
+    DescriptionCleaning
+    DATAcleaning
+    Handling_xa0
+    RenameColumn
+    ADDprecinctCode
+    UPPERCase
+class:
+  LoadingbyStructure
+    building_borough
+    building_road
+    building_bridge
+    building_tunnel
+    building_highway
+    
 Version 1
 Copyright:
 @ Nan Wu 
@@ -22,87 +29,63 @@ Copyright:
 from WN_struct_building.CityStructure import *
 import pandas as pd
 import datetime
-from _datetime import date
-def load_data(path,TimeBegin,TimeEnd):
+from datetime import date
+def TimeInterval(TimeBegin,TimeEnd):
+    '''
+    Create a time list from timebegin and timeend
+    Args:
+      TimeBegin: Loading data from. format:[YYYY,M] example:[2015,1]
+      TimeEnd: Loading data end in. format:[YYYY,M] example:[2016,2]
+    Return:
+      data series from time begin and time end with a 30 day frequency. It should contain all month from start and end.
+    Raise:
     
-    print('Building Structures...')
-    
-    print('Reading File...')
-    
+    '''
     start=datetime.date(TimeBegin[0],TimeBegin[1],20)
     end=datetime.date(TimeEnd[0],TimeEnd[1],20)
-    ALLDATE=pd.date_range(start,end,freq='30D')
+    return pd.date_range(start,end,freq='30D')
+def load_data(path,TimeBegin,TimeEnd):
+    '''
+    Main function in loading data.
+    Args:
+      path: data path
+      TimeBegin: Loading data from. format:[YYYY,M] example:[2015,1]
+      TimeEnd: Loading data end in. format:[YYYY,M] example:[2016,2]
+    Return:
+      city object. 
+    Raise:
+      FileNotFoundError
+    '''
+    print('Building Structures...')
+    print('Reading File...')
+    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    
+    ALLDATE=TimeInterval(TimeBegin, TimeEnd)
     area_name=['bk','bx','mn','qn','si']
     Loading=LoadingbyStructure()
+    
     for date in ALLDATE:
         for area in area_name:
             print(date.year,date.month,area,'...')
             #raise FileNotFoundError
+            print('Loading CSV File about collisions in Intersection...')
             collisions_intersection, factors_intersection = load_intersection(path, str(date.year), str(date.month).zfill(2), area)
+            print('Loading CSV File about collisions in HighTunBri...')
             collisions_HighTunBri, factors_HighTunBri = load_HighTunBri(path, str(date.year), str(date.month).zfill(2), area)
+            print('Building Borough Information...')
             Loading.building_borough(str(date.year), str(date.month).zfill(2), area, collisions_intersection, factors_intersection,collisions_HighTunBri, factors_HighTunBri )
+            print('Building Road Information...')
             Loading.building_road(str(date.year), str(date.month).zfill(2), area,collisions_intersection, factors_intersection,collisions_HighTunBri, factors_HighTunBri)
+            print('Building Highway Information...')
             Loading.building_highway(str(date.year), str(date.month).zfill(2), area,collisions_intersection, factors_intersection,collisions_HighTunBri, factors_HighTunBri)
+            print('Building Bridge Information...')
             Loading.building_bridge(str(date.year), str(date.month).zfill(2), area,collisions_intersection, factors_intersection,collisions_HighTunBri, factors_HighTunBri)
+            print('Building Tunnel Information...')
             Loading.building_tunnel(str(date.year), str(date.month).zfill(2), area,collisions_intersection, factors_intersection,collisions_HighTunBri, factors_HighTunBri)
-    
+            print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
     print('Success...')
     
     return Loading.NYC
-
-def FileNameSet(y,m,cORf):
-    if cORf==1:
-        if (y=='2015') & (int(m)<6):   
-            return 'hacc.xls','RoadwayCollisions-1','RoadwayVehiclesContrFactors-2'  
-        else: 
-            return 'hacc-en-us.xlsx' , 'RoadwayCollisions_1', 'RoadwayVehiclesContrFactors_2'
-    else:
-        if (y=='2015') & (int(m)<6):   
-            return 'acc.xls','IntersectCollisions-1','IntersectVehiclesContrFactors-2'
-        else: 
-            return 'acc-en-us.xlsx' , 'IntersectCollisions_1', 'IntersectVehiclesContrFactors'
-
-def FILEload(path,y,m,area,file,sheet_n1,sheet_n2,h,s):
-    collisions = pd.read_excel(''.join([path,y,'_',m,'_col_excel/',area,file]),sheetname=sheet_n1, header=h, skiprows=s)
-    factors = pd.read_excel(''.join([path,y,'_',m,'_col_excel/',area,file]),sheetname=sheet_n2, header=h, skiprows=s)
-    return collisions,factors
-
-def DescriptionCleaning(collisions,factors):
-    collisions = collisions[collisions.CollisionID.notnull()]
-    factors = factors[factors.ColllisionKey.notnull()]
-    return collisions,factors
-
-def DATAcleaning(collisions,factors):
-    collisions,factors = DescriptionCleaning(collisions,factors)
-    factors = RenameColumn(factors)
-    factors = ADDprecinctCode(factors,collisions)
-    factors = Handling_xa0(factors)
-    factors = UPPERCase(factors);
-    return collisions,factors
-
-def Handling_xa0(factors):
-    factors['ContributingFactorDescription']=factors['ContributingFactorDescription'].fillna('None')
-    ContributingFactor=list(factors['ContributingFactorDescription'])
-    factors['ContributingFactorDescription']=list(map(lambda i: ContributingFactor[i].replace('\xa0', ''), range(0,len(ContributingFactor))))
-    ContributingFactor=list(factors['ContributingFactorDescription'])
-    for i in range(0,len(ContributingFactor)):
-        if ContributingFactor[i][-1]==' ' :
-            ContributingFactor[i]=ContributingFactor[i][:-1] 
-    factors['ContributingFactorDescription']=ContributingFactor
-    return factors
-
-def RenameColumn(factors):
-    return factors.rename(columns={'ColllisionKey':'CollisionKey'})
-
-def ADDprecinctCode(factors,collisions):
-    #add OccurrencePrecinctCode to Factor information
-    return pd.merge(factors,collisions[['OccurrencePrecinctCode','CollisionKey']], how='left', on='CollisionKey')
- 
-def UPPERCase(factors):
-    factors['VehicleTypeDescription']=factors['VehicleTypeDescription'].fillna('None')
-    factors['VehicleTypeDescription']=[z.upper() for z in factors['VehicleTypeDescription']]
-    factors['ContributingFactorDescription']=[z.upper() for z in factors['ContributingFactorDescription']]
-    return factors
 
 def load_intersection(path,y,m,area):
     '''
@@ -152,8 +135,140 @@ def load_HighTunBri(path,y,m,area):
     
     
     return collisions_HighTunBri, factors_HighTunBri
-            
 
+def FILEload(path,y,m,area,file,sheet_n1,sheet_n2,h,s):
+    '''
+    Loading csv file
+    Args:
+        path: Data path
+        y: year
+        m: month
+        area: 'bk','bx','mn','qn','si' 
+        sheet_n1: sheet name for collisions
+        sheet_n2:  sheet name for factors
+    Return:
+        collisions: dataframe 
+        factors: dataframe
+    Raise:
+        FileNotFoundError
+    '''
+    collisions = pd.read_excel(''.join([path,y,'_',m,'_col_excel/',area,file]),sheetname=sheet_n1, header=h, skiprows=s)
+    factors = pd.read_excel(''.join([path,y,'_',m,'_col_excel/',area,file]),sheetname=sheet_n2, header=h, skiprows=s)
+    return collisions,factors
+
+def DATAcleaning(collisions,factors):
+    '''
+    Cleaning and normalize the data frames
+    Args:
+        collisions: dataframe 
+        factors: dataframe
+    Return:
+        collisions: dataframe 
+        factors: dataframe
+        
+    '''
+    collisions,factors = DescriptionCleaning(collisions,factors)
+    factors = RenameColumn(factors)
+    factors = ADDprecinctCode(factors,collisions)
+    factors = Handling_xa0(factors)
+    factors = UPPERCase(factors);
+    return collisions,factors
+
+def FileNameSet(y,m,cORf):
+    '''
+    Set loading file attributes by given year, month and type
+    Args:
+      y: year
+      m: month
+      cORf: collisions or factors
+    Return:
+      filename, sheet name for collisions, sheet name for factors
+    Raise:
+      ValueError
+    '''
+    if cORf==1:
+        if (y=='2015') & (int(m)<6):   
+            return 'hacc.xls','RoadwayCollisions-1','RoadwayVehiclesContrFactors-2'  
+        else: 
+            return 'hacc-en-us.xlsx' , 'RoadwayCollisions_1', 'RoadwayVehiclesContrFactors_2'
+    else:
+        if (y=='2015') & (int(m)<6):   
+            return 'acc.xls','IntersectCollisions-1','IntersectVehiclesContrFactors-2'
+        else: 
+            return 'acc-en-us.xlsx' , 'IntersectCollisions_1', 'IntersectVehiclesContrFactors'
+
+def DescriptionCleaning(collisions,factors):
+    '''
+    Delete all rows without a collisionID or collisionKey.
+    In fact, according to our data set, there are some rows of description under the data in the csv file.
+    Args:
+        collisions: dataframe 
+        factors: dataframe
+    Return:
+        collisions: dataframe 
+        factors: dataframe
+    '''
+    collisions = collisions[collisions.CollisionID.notnull()]
+    factors = factors[factors.ColllisionKey.notnull()]
+    return collisions,factors
+
+
+
+def Handling_xa0(factors):
+    '''
+    Replace all \xa0 in ContributingFactorDescription
+    Args:
+        factors: dataframe
+    Return:
+        factors: dataframe
+    '''
+    
+    factors['ContributingFactorDescription']=factors['ContributingFactorDescription'].fillna('None')
+    ContributingFactor=list(factors['ContributingFactorDescription'])
+    factors['ContributingFactorDescription']=list(map(lambda i: ContributingFactor[i].replace('\xa0', ''), range(0,len(ContributingFactor))))
+    ContributingFactor=list(factors['ContributingFactorDescription'])
+    for i in range(0,len(ContributingFactor)):
+        if ContributingFactor[i][-1]==' ' :
+            ContributingFactor[i]=ContributingFactor[i][:-1] 
+    factors['ContributingFactorDescription']=ContributingFactor
+    return factors
+
+def RenameColumn(factors):
+    '''
+    Rename one column
+    Args:
+        factors: dataframe
+    Return:
+        factors: dataframe
+    '''
+    
+    return factors.rename(columns={'ColllisionKey':'CollisionKey'})
+
+def ADDprecinctCode(factors,collisions):
+    '''
+    add OccurrencePrecinctCode to Factor information
+    Args:
+        factors: dataframe
+        collisions: dataframe 
+    Return:
+        factors: dataframe
+        collisions: dataframe 
+    
+    '''
+    return pd.merge(factors,collisions[['OccurrencePrecinctCode','CollisionKey']], how='left', on='CollisionKey')
+ 
+def UPPERCase(factors):
+    '''
+    Change all letters in string value into Upper case 
+    Args:
+        factors: dataframe
+    Return:
+        factors: dataframe
+    '''
+    factors['VehicleTypeDescription']=factors['VehicleTypeDescription'].fillna('None')
+    factors['VehicleTypeDescription']=[z.upper() for z in factors['VehicleTypeDescription']]
+    factors['ContributingFactorDescription']=[z.upper() for z in factors['ContributingFactorDescription']]
+    return factors
 
 class LoadingbyStructure():
     def __init__(self):

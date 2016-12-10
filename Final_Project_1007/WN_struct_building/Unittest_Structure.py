@@ -5,18 +5,30 @@ Created on Dec 4, 2016
 '''
 import unittest
 import os
-from WN_struct_building.data_loading import *
+from WN_struct_building.LoadingANDBuilding import *
 from CheckandError.DefinedError import ExitALLProgram
 import numpy as np
+'''
+Unittest for WN_struct_building package 
+'''
 from WN_struct_building.CityStructure import *
 from sklearn.metrics.pairwise import manhattan_distances
+
 class LoadingDataTest(unittest.TestCase):
+    '''
+    Test fundamental functions in data loading
+    '''
     def setUp(self):
         self.dirname, self.filename = os.path.split(os.path.abspath(__file__))
         self.DataPath=''.join([self.dirname[:-18],'/NYPD_DATA/'])
         self.Loading=LoadingbyStructure()
         self.collisions_HighTunBri, self.factors_HighTunBri=load_HighTunBri(self.DataPath, '2015', '01', 'bk')
         self.collisions_Intersection, self.factors_Intersection=load_intersection(self.DataPath, '2015', '01', 'bk')
+    def test_TimeInterval(self):
+        self.assertEqual(len(TimeInterval([2015,7],[2016,8])),14)
+        self.assertEqual(14, sum([p in [x.month for x in TimeInterval([2015,7],[2016,8])] for p in [7,8,9,10,11,12,1,2,3,4,5,6,7,8]]))
+        
+        
     def test_FileNameSet(self):
         self.assertEqual(FileNameSet('2015', '01', 1),('hacc.xls','RoadwayCollisions-1','RoadwayVehiclesContrFactors-2' )) 
         self.assertEqual(FileNameSet('2016', '01', 1),('hacc-en-us.xlsx' , 'RoadwayCollisions_1', 'RoadwayVehiclesContrFactors_2'))
@@ -94,6 +106,9 @@ class LoadingDataTest(unittest.TestCase):
     
        
 class StructureBuildingTest(unittest.TestCase):
+    '''
+    Test data structure 
+    '''
     def setUp(self):
         self.dirname, self.filename = os.path.split(os.path.abspath(__file__))
         self.DataPath=''.join([self.dirname[:-18],'/NYPD_DATA/'])
@@ -105,14 +120,9 @@ class StructureBuildingTest(unittest.TestCase):
         self.assertGreater(len(self.NYC.Highway_Dict), 0)
         self.assertGreater(len(self.NYC.Bridge_Dict), 0)
         self.assertGreater(len(self.NYC.Tunnel_Dict), 0)
-        print(sorted(self.NYC.Highway_Dict.keys()))
-        print(sorted(self.NYC.Tunnel_Dict.keys()))
-        print(sorted(self.NYC.Bridge_Dict.keys()))
-        print(self.NYC.roadCatalog())
     def test_Borough(self):
         for Bo in self.NYC.Borough_Dict.values():
             self.assertIsInstance(Bo, borough)
-            print(sorted(Bo.precinctList.keys()))
     def test_Precinct(self):
         manhatta=self.NYC.Borough_Dict['mn']
         for pre in manhatta.precinctList.values():
@@ -146,5 +156,4 @@ class StructureBuildingTest(unittest.TestCase):
                     btrh.Collisions['2015'][m]
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

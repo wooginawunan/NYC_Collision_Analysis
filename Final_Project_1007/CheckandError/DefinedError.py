@@ -1,19 +1,36 @@
 '''
-Created on Dec 3, 2016
-
-@author: apple
+Define Error
+Copyright:
+@ Nan Wu 
+@ nw1045@nyu.edu
+@ wooginawunan@gmail.com
 '''
 
 
 class ExitALLProgram(Exception):
+    '''
+    Check input "Exit", anytime user input a Exit, this error will be raise and exit the whole program.
+    '''
     pass
 class InvalidDate(Exception):
+    '''
+    Raise when The Input Date are not available.
+    '''
     pass
 class DATEEndBeforeBegin(Exception):
+    '''
+    Raise when timeend are earlier than timestart
+    '''
     pass
 class GoingBack(Exception):
+    '''
+     Check input "Back", anytime user input a Back, this error will be raise and go to the upper level of menu.
+    '''
     pass
 class InvalidInput(Exception):
+    '''
+    Raise when input are invalid
+    '''
     pass
 
 class WrongFilePathError(Exception):

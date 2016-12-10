@@ -1,7 +1,10 @@
 '''
-Created on Dec 2, 2016
+This module contain all classes of methods could be applied on the information
 
-@author: apple
+Copyright:
+@ Nan Wu 
+@ nw1045@nyu.edu
+@ wooginawunan@gmail.com
 '''
 import datetime
 import pandas as pd
@@ -19,7 +22,31 @@ from mpl_toolkits.basemap import Basemap
 
 class FundamentalMethods():
     '''
-    classdocs
+    Methods for display the information of NYC collisions.
+    All Methods class share a init function with those common useful attributes
+    Attributes:
+        data: a city object.
+            Type: city class
+        savepath: reports save to a specific path.
+            Type: string
+        Influencer: Factors influencing the severity of a collision
+            Type: dictionary
+                Keys: int (a number that used in reading and passing the influencer)
+                Value: string (the name of the relevant influencer)
+        Indicator:  Indicators that used to measure the the severity of the collision
+            Type: dictionary
+                Keys: int (a number that used in reading and passing the indicator)
+                Value: string (the name of the relevant indicator)
+        InfluencerDes: Detailed description of the influencer
+            Type: dictionary
+                Keys: int (a number that used in reading and passing the indicator)
+                Value: string (the detailed description of the relevant influencer)
+        TimeBegin:  the start of the period user want to analysis
+            Type: list ([2015,1])
+        TimeEnd: the end of the period user want to analysis
+            Type: list ([2015,1])
+        TimeList: ALL year and month with type of string. 
+            Type: list(['201501','201502'])
     '''
     def __init__(self, city, savepath, TimeBegin,TimeEnd):
         '''
@@ -42,16 +69,48 @@ class FundamentalMethods():
         self.TimeList=list(map(lambda date:str(date.year)+str(date.month).zfill(2), ALLDATE))
         
 class SituationMethods(FundamentalMethods):
-    
-    def TableDICT_Init(self):
-        self.Table_Dict={'City':self.CityTable,'Borough': self.BoroughTable,'Precinct':self.PrecinctTable,'Highway':self.HighwayTable,'Tunnel':self.TunnelTable,'Bridge':self.BridgeTable,'Road':self.RoadTable}
+    '''
+    This class is for analysis of the situation of the collision.
+    Provide functions calculating and generate figures for the statistical summary of each indicator in a specific level.
+    Attributes:
+        Table_Dict:
         
+    Methods:
+    0 Specific Attributes Initiating
+        TableDICT_Init
+    1 Type of methods is generating data frame.
+        CityTable
+        BoroughTable
+        PrecinctTable
+        PrecinctCalculate
+        PrecinctTableUnit
+        BoroughTableUnit
+        CityTableUnit
+        BTHRcalculate
+        BTHRTableUnit
+        PrecinctTableAll
+        BoroughTableAll
+        BTHRTableAll
+        TunnelTable
+        BridgeTable
+        HighwayTable
+        RoadTable
+    2 Type of methods present a report
+        map
+        ...
+    '''
+    def TableDICT_Init(self):
+        '''
+        Initiating a Table generating function dictionary
+        '''
+        self.Table_Dict={'City':self.CityTable,'Borough': self.BoroughTable,'Precinct':self.PrecinctTable,'Highway':self.HighwayTable,'Tunnel':self.TunnelTable,'Bridge':self.BridgeTable,'Road':self.RoadTable}
         
     def CityTable(self,Indicator,name='null'):
         '''
         Out Put Same as the CityTableUnit
         '''
         return self.CityTableUnit(self.data,Indicator)
+    
     def BoroughTable(self,Indicator,name='null'):
         '''
         This method will be the main interacting function will functional methods.
@@ -87,11 +146,7 @@ class SituationMethods(FundamentalMethods):
             for borough in self.data.Borough_Dict.values():
                 pre_List.update(borough.precinctList)
             return self.PrecinctTableAll(pre_List, Indicator)
-    
-    
-         
-                            
-   
+
     def PrecinctCalculate(self,Indicator,df1,df2): 
         '''
         This method calculate the value of a specific Indicator on specific area and time 
@@ -107,6 +162,7 @@ class SituationMethods(FundamentalMethods):
             return len(df1['CollisionKey'].unique())+len(df2['CollisionKey'].unique())
         else:
             return df1[self.Indicator[Indicator]].sum()+df2[self.Indicator[Indicator]].sum() 
+    
     def PrecinctTableUnit(self,Precinct,Indicator):
         '''
         This method will generate a data frame index is the whole time period and columns is a specific Precinct.
@@ -135,6 +191,7 @@ class SituationMethods(FundamentalMethods):
                 pass
         table=pd.DataFrame(pd.Series(table_0),columns=[Precinct.ID])
         return table
+    
     def BoroughTableUnit(self,Borough,Indicator):
         '''
         This method will generate a data frame index is the whole time period and columns is a specific Borough.
@@ -159,9 +216,7 @@ class SituationMethods(FundamentalMethods):
                 table_0[time]=table_0[time]+(self.PrecinctTableUnit(precinct, Indicator).ix[time])[0]
         table=pd.DataFrame(pd.Series(table_0),columns=[Borough.name])
         return table
-    
-        
-        
+     
     def CityTableUnit(self,City,Indicator):
         '''
         This method will generate a data frame index is the whole time period and columns is a specific City.
@@ -186,6 +241,7 @@ class SituationMethods(FundamentalMethods):
                 table_0[time]=table_0[time]+(self.BoroughTableUnit(borough, Indicator).ix[time])[0]
         table=pd.DataFrame(pd.Series(table_0),columns=[City.name])
         return table
+    
     def BTHRcalculate(self,Indicator,df):
         '''
         This method calculate the value of a specific Indicator on specific area and time 
@@ -201,6 +257,7 @@ class SituationMethods(FundamentalMethods):
             return len((df['CollisionKey'].unique()))
         else:
             return df[self.Indicator[Indicator]].sum()
+        
     def BTHRTableUnit(self,BTHR,Indicator):
 
         '''
@@ -228,6 +285,7 @@ class SituationMethods(FundamentalMethods):
                 pass
         table=pd.DataFrame(pd.Series(table_0),columns=[BTHR.name])
         return table
+    
     def PrecinctTableAll(self,precinct_List,Indicator):
         '''
         This method will generate a data frame with index is the whole time period and columns is the all instances of precinct class in one of the Borough object in NYC.
@@ -253,6 +311,7 @@ class SituationMethods(FundamentalMethods):
         for precinct in precinct_List.values():
             table[precinct.ID] = self.PrecinctTableUnit(precinct, Indicator)
         return table
+    
     def BoroughTableAll(self,Borough_Dict,Indicator):
         '''
         This method will generate a data frame with index is the whole time period and columns is the all instances of the Borough object in NYC.
@@ -278,6 +337,7 @@ class SituationMethods(FundamentalMethods):
         for borough in Borough_Dict.values():
             table[borough.name] = self.BoroughTableUnit(borough, Indicator)
         return table
+    
     def BTHRTableAll(self,BTHR_Dict,Indicator):
         '''
         This method will generate a data frame with index is the whole time period and columns is the all instances of the BTHR object in NYC.
@@ -304,7 +364,6 @@ class SituationMethods(FundamentalMethods):
             table[BTHR.name] = self.BTHRTableUnit(BTHR, Indicator)
         return table
         
-    
     def RoadTable(self,Indicator,name='null'):
         '''
         This method will be the main interacting function will functional methods.
@@ -334,6 +393,7 @@ class SituationMethods(FundamentalMethods):
             #name is null (is not one of keys, could be call)
             #call the function All
             return self.BTHRTableAll(self.data.Highway_Dict, Indicator)
+        
     def BridgeTable(self,Indicator,name='null'):
         '''
         This method will be the main interacting function will functional methods.
@@ -348,6 +408,7 @@ class SituationMethods(FundamentalMethods):
             #name is null (is not one of keys, could be call)
             #call the function All
             return self.BTHRTableAll(self.data.Bridge_Dict, Indicator)
+        
     def TunnelTable(self,Indicator,name='null'):
         '''
         This method will be the main interacting function will functional methods.
@@ -362,14 +423,7 @@ class SituationMethods(FundamentalMethods):
             #name is null (is not one of keys, could be call)
             #call the function All
             return self.BTHRTableAll(self.data.Tunnel_Dict, Indicator)
-    
-    
-    
-    
-    
-    def SummaryTableCreating(self,Indicator,level,name='null'):
-        pass
-       # return Table
+
     def briefSummary(self,Indicator,level,name='null'):
         self.TableDICT_Init()
         print(self.Table_Dict[level](Indicator,name))
@@ -382,7 +436,6 @@ class SituationMethods(FundamentalMethods):
         pass
     def Map(self,Indicator,level,name='null'):
 
-  
         # References:
         # http://stackoverflow.com/questions/6028675/setting-color-range-in-matplotlib-patchcollection
         # http://basemaptutorial.readthedocs.io/en/latest/shapefile.html
@@ -461,23 +514,98 @@ class SituationMethods(FundamentalMethods):
     def RankTop10(self,Indicator,level,name='null'):
         pass
 
-
-
 class ContributingMethods(FundamentalMethods):
     '''
-    
+    This class is for analysis of the contributing factors of all collision.
+    Provide functions calculating and generate figures for the statistical summary of 
+    how influencers influence each indicator in a specific level.
+    Attributes:
+        Inf_Dict: dictionary of table functions
+        vehicleType: dictionary of vehicleType description
+        ContributingFactor: ContributingFactor of vehicleType description
+        index: 1: influencer type (vehicleType,ContributingFactor)
+        
+    Methods:
+    0 Specific Attributes Initiating
+        InfDICT_Init
+    1 Type of methods is generating data frame.
+        InfCalculate
+        TableInit_WITH0
+        precinctInfTable_Unit
+        BTHRInfTable_Unit
+        BTHRInfTable_All
+        BoroughInfTable_Unit
+        CityInfTable_Unit
+        precinctInfTable
+        boroughInfTable
+        cityInfTable
+        BridgeInfTable
+        HighwayInfTable
+        TunnelInfTable
+        BridgeTable
+        RoadInfTable
+        TunnelInfTable
+    2 Type of methods present a report
+        InfluenceONSeverity
+            CloseFigure
+            Colorset
+            Labelset
+            Titleset
+            SavePathset
+            BarPlot
     '''
-    
     def InfCalculate(self,indicator,influencer,Collisions,Factors):
+        '''
+        Given two dataframe of collisions and factors. Calculate the sum value of indicators for each type of influencer.  
+    
+        Args:
+            indicator: int - the numerical label of a indicator
+            influencer: int - the numerical label of a influencer
+            Collisions: data frame
+            Factors: data frame
+        Return: 
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        Raise:
+        
+        '''
         if indicator==1:
             df=Factors[[self.InfluencerDes[influencer],'CollisionKey']].groupby([self.InfluencerDes[influencer]])['CollisionKey'].unique()
             return pd.DataFrame(pd.Series(map(lambda x:len(x),df),index=df.index),columns=[self.Indicator[1]])
         else:
             df=pd.merge(Factors[[self.InfluencerDes[influencer],'CollisionKey']],Collisions[[self.Indicator[indicator],'CollisionKey']], how='left', on='CollisionKey')
             return pd.DataFrame(df.groupby([self.InfluencerDes[influencer]])[self.Indicator[indicator]].sum())
-    
+    def TableInit_WITH0(self,indicator,influencer):
+        '''
+        table init with all possible influencer, value 0
+        '''
+        return pd.DataFrame(np.zeros(len(self.index[influencer])),index=self.index[influencer],columns=[self.Indicator[indicator]])
     def precinctInfTable_Unit(self,precinct,indicator,influencer):
-        table=pd.DataFrame(np.zeros(len(self.index[influencer])),index=self.index[influencer],columns=[self.Indicator[indicator]])
+        '''
+        Calculate the sum value of indicators for each type of influencer of all the time interval on a precinct.  
+        Args:
+            precinct: a precinct object
+            indicator: int - the numerical label of a indicator
+            influencer: int - the numerical label of a influencer
+        Return: 
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        Raise:
+            KeyError
+        '''
+        table=self.TableInit_WITH0(indicator,influencer)
         for time in self.TimeList:
             try:
                 Collisions_i = precinct.Collisions_intersection[time[0:4]][time[4:6]]
@@ -496,12 +624,28 @@ class ContributingMethods(FundamentalMethods):
                     table=table.add(self.InfCalculate(indicator,influencer,Collisions_H,Factors_H),fill_value=0)
                 except KeyError:
                     pass
-        return table
-                
-                
+        return table        
         
     def BTHRInfTable_Unit(self,BTHR,indicator,influencer):
-        table=pd.DataFrame(np.zeros(len(self.index[influencer])),index=self.index[influencer],columns=[self.Indicator[indicator]])
+        '''
+        Calculate the sum value of indicators for each type of influencer of all the time interval on a road,tunnel,highway or bridge.  
+        Args:
+            BTHR: a object of road,tunnel,highway or bridge class
+            indicator: int - the numerical label of a indicator
+            influencer: int - the numerical label of a influencer
+        Return: 
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        Raise:
+            KeyError
+        '''
+        table=self.TableInit_WITH0(indicator,influencer)
         for time in self.TimeList:
             try:
                 Collisions = BTHR.Collisions[time[0:4]][time[4:6]]
@@ -510,26 +654,96 @@ class ContributingMethods(FundamentalMethods):
             except KeyError:
                 pass
         return table
+    
     def BTHRInfTable_All(self,BTHR_Dict,indicator,influencer):
-        table=pd.DataFrame(np.zeros(len(self.index[influencer])),index=self.index[influencer],columns=[self.Indicator[indicator]])
+        '''
+        Calculate the sum value of indicators for each type of influencer of all the time interval on all roads, tunnels, bridges or highways.  
+        Args:
+            BTHR_Dict: a dictionary of objects of road,tunnel,highway or bridge class
+            indicator: int - the numerical label of a indicator
+            influencer: int - the numerical label of a influencer
+        Return: 
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        Raise:
+            KeyError
+        '''
+        table=self.TableInit_WITH0(indicator,influencer)
         for BTHR in BTHR_Dict.values():
             table = table.add(self.BTHRInfTable_Unit(BTHR, indicator, influencer),fill_value=0)
         return table
+    
     def BoroughInfTable_Unit(self,borough,indicator,influencer):
-        table=pd.DataFrame(np.zeros(len(self.index[influencer])),index=self.index[influencer],columns=[self.Indicator[indicator]])
+        '''
+        Calculate the sum value of indicators for each type of influencer of all the time interval on a borough.  
+        Args:
+            borough: a precinct object
+            indicator: int - the numerical label of a indicator
+            influencer: int - the numerical label of a influencer
+        Return: 
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        Raise:
+            KeyError
+        '''
+        table=self.TableInit_WITH0(indicator,influencer)
         for precinct in borough.precinctList.values():
             table = table.add(self.precinctInfTable_Unit(precinct,indicator,influencer),fill_value=0)
         return table
+    
     def CityInfTable_Unit(self,city,indicator,influencer):
-        table=pd.DataFrame(np.zeros(len(self.index[influencer])),index=self.index[influencer],columns=[self.Indicator[indicator]])
+        '''
+        Calculate the sum value of indicators for each type of influencer of all the time interval on a city.  
+        Args:
+            city: a city object
+            indicator: int - the numerical label of a indicator
+            influencer: int - the numerical label of a influencer
+        Return: 
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        Raise:
+            KeyError
+        '''
+        table=self.TableInit_WITH0(indicator,influencer)
         for borough in city.Borough_Dict.values():
             table = table.add(self.BoroughInfTable_Unit(borough,indicator,influencer),fill_value=0)
         return table
-    
-    
-    
-    
+
     def precinctInfTable(self,Influencer,Indicator,name):
+        '''
+        Calculate the sum value of indicators for each type of influencer of all the time interval on a precinct.  
+        Args:
+            Influencer: int - the numerical label of a indicator
+            Indicator:int - the numerical label of a influencer
+            name: a precinct ID 
+        Return:
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        '''
         if name!='null':
             #name not null (is one of keys, could be call)
             #call the function Unit
@@ -540,12 +754,63 @@ class ContributingMethods(FundamentalMethods):
             print("This method could not be applied on not a specific precinct!")
                
     def boroughInfTable(self,Influencer,Indicator,name):
-        return self.BoroughInfTable_Unit(self.data.Borough_Dict[name], Indicator, Influencer)
-    
+        '''
+        Calculate the sum value of indicators for each type of influencer of all the time interval on a borough.  
+        Args:
+            Influencer: int - the numerical label of a indicator
+            Indicator:int - the numerical label of a influencer
+            name: a borough name
+        Return:
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        '''
+        try:
+            return self.BoroughInfTable_Unit(self.data.Borough_Dict[name], Indicator, Influencer)
+        except KeyError:
+            print("This method could not be applied on not a specific precinct!")
+            
     def cityInfTable(self,Influencer,Indicator,name='null'):
+        '''
+        Calculate the sum value of indicators for each type of influencer of all the time interval on a city.  
+        Args:
+            Influencer: int - the numerical label of a indicator
+            Indicator:int - the numerical label of a influencer
+            name: a city name
+        Return:
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        '''
         return self.CityInfTable_Unit(self.data, Indicator, Influencer)
     
     def BridgeInfTable(self,Influencer,Indicator,name='null'):
+        '''
+        Calculate the sum value of indicators for each type of influencer of all the time interval on a Bridge.  
+        Args:
+            Influencer: int - the numerical label of a indicator
+            Indicator:int - the numerical label of a influencer
+            name: a bridge name or null
+        Return:
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        '''
         try:
             #name not null (is one of keys, could be call)
             #call the function Unit
@@ -556,6 +821,22 @@ class ContributingMethods(FundamentalMethods):
             return self.BTHRInfTable_All(self.data.Bridge_Dict, Indicator,Influencer)
     
     def HighwayInfTable(self,Influencer,Indicator,name='null'):
+        '''
+        Calculate the sum value of indicators for each type of influencer of all the time interval on a highway.  
+        Args:
+            Influencer: int - the numerical label of a indicator
+            Indicator:int - the numerical label of a influencer
+            name: a highway name or null
+        Return:
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        '''
         try:
             #name not null (is one of keys, could be call)
             #call the function Unit
@@ -564,7 +845,24 @@ class ContributingMethods(FundamentalMethods):
             #name is null (is not one of keys, could be call)
             #call the function All
             return self.BTHRInfTable_All(self.data.Highway_Dict, Indicator,Influencer)
+    
     def TunnelInfTable(self,Influencer,Indicator,name='null'):
+        '''
+        Calculate the sum value of indicators for each type of influencer of all the time interval on a tunnel.  
+        Args:
+            Influencer: int - the numerical label of a indicator
+            Indicator:int - the numerical label of a influencer
+            name: a tunnel name or null
+        Return:
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        '''
         try:
             #name not null (is one of keys, could be call)
             #call the function Unit
@@ -573,7 +871,24 @@ class ContributingMethods(FundamentalMethods):
             #name is null (is not one of keys, could be call)
             #call the function All
             return self.BTHRInfTable_All(self.data.Tunnel_Dict, Indicator,Influencer)
+    
     def RoadInfTable(self,Influencer,Indicator,name='null'):
+        '''
+        Calculate the sum value of indicators for each type of influencer of all the time interval on a road.  
+        Args:
+            Influencer: int - the numerical label of a indicator
+            Indicator:int - the numerical label of a influencer
+            name: a road name  or null
+        Return:
+            data frame: 
+                Index : all types in the influencer
+                columns: indicator
+                                         indicator
+            Influencer Value Type1          10
+            Influencer Value Type2          20
+            ...                             30
+            Influencer Value TypeN          40
+        '''
         try:
             #name not null (is one of keys, could be call)
             #call the function Unit
@@ -583,50 +898,118 @@ class ContributingMethods(FundamentalMethods):
             #call the function All
             return self.BTHRInfTable_All(self.data.Road_Dict, Indicator,Influencer)
         
-    
     def InfDICT_Init(self):
+        '''
+        specific class attributes init
+        
+        '''
         self.Inf_Dict={'City':self.cityInfTable,'Borough': self.boroughInfTable,'Precinct':self.precinctInfTable,
                        'Highway':self.HighwayInfTable,'Tunnel':self.TunnelInfTable,'Bridge':self.BridgeInfTable,'Road':self.RoadInfTable} 
-        self.vehicleType=['ALL-TERRAIN VEHICLE','AMBULANCE','BICYCLE','BUS','FIRE TRUCK','LARGE COM VEH(6 OR MORE TIRES)','MOTORCYCLE','PASSENGER VEHICLE','PEDICAB','PICK-UP TRUCK','SMALL COM VEH(4 TIRES)','SPORT UTILITY / STATION WAGON','TAXI VEHICLE','VAN','UNKNOWN']
-        
-        self.ContributingFactor=['None', 'Following too closely ', 'Outside car distraction ',
-       'Alcohol involvement ', 'Driver inattention/distraction ',
-       'Unsafe lane changing ', 'Failure to yield right-of-way ',
-       'Lost consciousness ', 'Fell asleep ', 'Turning improperly ',
-       'Unsafe speed ', 'Passing too closely ',
-       'Passing or lane usage improper ', 'Driver inexperience ',
-       'Other uninvolved vehicle ', 'Backing unsafely ',
-       'Traffic control disregarded ', 'Passenger distraction ',
-       'Drugs (illegal) ', 'Pedest/bike/other pedest error ',
-       'Failure to keep right ', 'Cell phone (hand-held) ',
-       'Aggressive driving/road rage ', 'Illness ', 'Fatigued/drowsy ',
-       'Other electronic device ', 'Physical disability ',
-       'Using on board navigate device ']
+        self.vehicleType=['ALL-TERRAIN VEHICLE','AMBULANCE','BICYCLE','BUS','FIRE TRUCK','LARGE COM VEH(6 OR MORE TIRES)',
+                          'MOTORCYCLE','PASSENGER VEHICLE','PEDICAB','PICK-UP TRUCK','SMALL COM VEH(4 TIRES)',
+                          'SPORT UTILITY / STATION WAGON','TAXI VEHICLE','VAN','UNKNOWN']
+        self.ContributingFactor=['None', 'Following too closely', 'Outside car distraction',
+       'Alcohol involvement', 'Driver inattention/distraction',
+       'Unsafe lane changing', 'Failure to yield right-of-way',
+       'Lost consciousness', 'Fell asleep', 'Turning improperly',
+       'Unsafe speed', 'Passing too closely',
+       'Passing or lane usage improper', 'Driver inexperience',
+       'Other uninvolved vehicle', 'Backing unsafely',
+       'Traffic control disregarded', 'Passenger distraction',
+       'Drugs (illegal)', 'Pedest/bike/other pedest error',
+       'Failure to keep right', 'Cell phone (hand-held)',
+       'Aggressive driving/road rage', 'Illness', 'Fatigued/drowsy',
+       'Other electronic device', 'Physical disability',
+       'Using on board navigate device']
         
         self.ContributingFactor=[z.upper() for z in self.ContributingFactor]
         
         self.index={1:self.vehicleType,2:self.ContributingFactor}
     
     def CloseFigure(self):
-        print(1)
-        
+        '''
+        Close Figure Choose
+        '''
         self.flag= input("Input anything to Close the Figure and Continue")
         plt.close()
     
     def Colorset(self,df):
+        '''
+        Args:
+            df: data frame
+        return:
+            list of [x,y,z] RGB color 
+        
+        '''
         return  [(x/(len(df)+5), x/(len(df)+5), 0.75) for x in range(len(df))]  
     
     def Labelset(self,df):
+        '''
+        Args:
+            df: data frame
+        return:
+            shorted index string
+        '''
         return ['\n'.join(wrap(l, 20)) for l in df.index]
+    
     def Titleset(self,level,name,Indicator,Influencer):
+        '''
+        Set title
+        Args:
+            level: 'Bridge','Highway','Tunnel','Road','City','Borough','Precinct'
+            name: null or a specific name
+            Influencer: Factors influencing the severity of a collision
+            Type: dictionary
+                Keys: int (a number that used in reading and passing the influencer)
+                Value: string (the name of the relevant influencer)
+            Indicator:  Indicators that used to measure the the severity of the collision
+            Type: dictionary
+                Keys: int (a number that used in reading and passing the indicator)
+                Value: string (the name of the relevant indicator)
+        Return:
+            string
+        '''
         return ' '.join([self.InfluencerDes[Influencer], self.Indicator[Indicator],'\n',level,'-',name,'\n',self.TimeList[0],'to', self.TimeList[-1]] 
                         if name!='null' else [self.InfluencerDes[Influencer]," on ", self.Indicator[Indicator],'\n',level,'\n',self.TimeList[0],'to', self.TimeList[-1]])
     def SavePathset(self,Influencer,Indicator,level,name):
+        '''
+        Save file name
+        Args:
+            level: 'Bridge','Highway','Tunnel','Road','City','Borough','Precinct'
+            name: null or a specific name
+            Influencer: Factors influencing the severity of a collision
+            Type: dictionary
+                Keys: int (a number that used in reading and passing the influencer)
+                Value: string (the name of the relevant influencer)
+            Indicator:  Indicators that used to measure the the severity of the collision
+            Type: dictionary
+                Keys: int (a number that used in reading and passing the indicator)
+                Value: string (the name of the relevant indicator)
+        Return:
+            string
+        '''
         return ' '.join([self.InfluencerDes[Influencer], self.Indicator[Indicator],'\n',level,'-',name,'\n','.pdf'] 
                         if name!='null' else [self.InfluencerDes[Influencer]," on ", self.Indicator[Indicator],'\n',level,'\n','.pdf'])
     def BarPlot(self,df,Influencer,Indicator,level,name):
-        
-        
+        '''
+        Generate a bar chart
+        Args:
+            df: dataframe
+            level: 'Bridge','Highway','Tunnel','Road','City','Borough','Precinct'
+            name: null or a specific name
+            Influencer: Factors influencing the severity of a collision
+                Type: dictionary
+                Keys: int (a number that used in reading and passing the influencer)
+                Value: string (the name of the relevant influencer)
+            Indicator:  Indicators that used to measure the the severity of the collision
+                Type: dictionary
+                Keys: int (a number that used in reading and passing the indicator)
+                Value: string (the name of the relevant indicator)
+        Return:
+            string
+        Raise:
+            TypeError
+        '''
         ax = df.sort_values(by=[self.Indicator[Indicator]]).plot.barh(
             title=self.Titleset(level, name,Indicator,Influencer),
             figsize=(10,10), 
@@ -648,8 +1031,22 @@ class ContributingMethods(FundamentalMethods):
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         
     def InfluenceONSeverity(self,Influencer,Indicator,level,name='null'):
-        self.InfDICT_Init()
+        '''
+        Generate a bar chart about the influenceo on severity
+        Args:
+            level: 'Bridge','Highway','Tunnel','Road','City','Borough','Precinct'
+            name: null or a specific name
+            Influencer: Factors influencing the severity of a collision
+                Type: dictionary
+                Keys: int (a number that used in reading and passing the influencer)
+                Value: string (the name of the relevant influencer)
+            Indicator:  Indicators that used to measure the the severity of the collision
+                Type: dictionary
+                Keys: int (a number that used in reading and passing the indicator)
+                Value: string (the name of the relevant indicator)
+        '''
         
+        self.InfDICT_Init()
         df = self.Inf_Dict[level](Influencer,Indicator,name)
         
         try:

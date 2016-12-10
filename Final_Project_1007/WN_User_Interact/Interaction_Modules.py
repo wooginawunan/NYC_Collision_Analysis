@@ -20,7 +20,7 @@ It defines classes_and_methods
 
 #from .CollisionSituation import CollisionSituation
 from WN_struct_building import StructureBuilding
-from Methods.Methods_BY_Level import MethodsMenu_Situation,MethodMenu_Contributing
+from Methods.Methods_Menu import MethodsMenu_Situation,MethodMenu_Contributing
 from CheckandError.DefinedError import *
 from CheckandError.Check import *
 
@@ -29,7 +29,7 @@ import shutil
 
 def ProgramIntroduction():
     '''
-    An brief introduction th the whole project.
+    An brief introduction of the whole project.
     
     '''
     print('Welcome to NYC Motor Vehicle Collisions Observation System.')
@@ -49,7 +49,7 @@ def ProgramIntroduction():
     print("Exit by input : Exit")
     print("Back with: Back")
     print("Now you can begin with it.")
-
+    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
    
 def BeginDate():
     while True:
@@ -88,11 +88,13 @@ def CreateFolder(path):
     else:
         shutil.rmtree(path)
         os.makedirs(path)
+
 def CreateSaveFolder(begintime,endtime,savepath):
     savepath=''.join([savepath,'/results/'])
     path=savepath+begintime+'_'+endtime
     CreateFolder(path)
     return path
+
 def SetTimeInterval(dirname):
     print("You can set a period for data loading and structure building.")
     print('ALL following analysis will be based on this period.')
@@ -116,6 +118,7 @@ def Load_INTinput(Instruction,Availbelset):
             return InformationType
         except InvalidInput:
             print("Invalid Input!")
+
 def Load_Stringinput_First(Instruction,Availbelset):
     while True:
         try:
@@ -127,26 +130,31 @@ def Load_Stringinput_First(Instruction,Availbelset):
             return -1
         except InvalidInput:
             pass
+
 def Borough_Specific(NYC):
     print('You can choose from:')
     Bo_Catalog=NYC.boroughCatalog()
     print('\n'.join(Bo_Catalog))
     return Load_Stringinput_First('Please input the short name(two letters) before the name:',NYC.Borough_Dict.keys())
 
+def PrecinctbyBoroughPrint(NYC):
+    print('You can choose a borough from:')
+    Bo_Catalog=NYC.boroughCatalog()
+    print('\n'.join(Bo_Catalog))
+    Bname = input('Please input the short name(two letters) before the name:')
+    GeneralCheck(Bname)
+    Bname = StringInputCheck(NYC.Borough_Dict.keys(),Bname)
+    print(NYC.Borough_Dict[Bname].name+' : ')
+    precinctCata=NYC.Borough_Dict[Bname].precinctCatalog()
+    print('  \n'.join(precinctCata))
+    return Bname
+
 def Precinct_Specific(NYC):
     print("Precinct are grouped by Borough.")
     print("Please specific the Borough First.")
     while True:
         try:
-            print('You can choose a borough from:')
-            Bo_Catalog=NYC.boroughCatalog()
-            print('\n'.join(Bo_Catalog))
-            Bname = input('Please input the short name(two letters) before the name:')
-            GeneralCheck(Bname)
-            Bname = StringInputCheck(NYC.Borough_Dict.keys(),Bname)
-            print(NYC.Borough_Dict[Bname].name+' : ')
-            precinctCata=NYC.Borough_Dict[Bname].precinctCatalog()
-            print('  \n'.join(precinctCata))
+            Bname = PrecinctbyBoroughPrint(NYC)
             while True:
                 try:
                     name = input('Please input a precinct ID :')
@@ -162,22 +170,23 @@ def Precinct_Specific(NYC):
         except InvalidInput:
             pass
 
+def RoadNameDictPrint(NYC):
+    FirstC=input('Input a CAPITAL letter or - : ')
+    GeneralCheck(FirstC)
+    FirstC=StringInputCheck('ABCDEFGHIGKLMNOPQRSTUVWXYZ-',FirstC)
+    if FirstC=='-':
+        FirstC='*Other'
+    roadCata=NYC.roadCatalog()
+    print('You can choose from:')
+    print('\n'.join(roadCata[FirstC]))
+
 def Road_Specific(NYC):
     print('Please specify the first character of the road you want to explore.')
     print('You can choose from ABCDEFGHIGKLMNOPQRSTUVWXYZ or - for others')
     
     while True:
         try:
-            
-            FirstC=input('Input a CAPITAL letter or - : ')
-            GeneralCheck(FirstC)
-            FirstC=StringInputCheck('ABCDEFGHIGKLMNOPQRSTUVWXYZ-',FirstC)
-            if FirstC=='-':
-                FirstC='*Other'
-            roadCata=NYC.roadCatalog()
-            print('You can choose from:')
-            print('\n'.join(roadCata[FirstC]))
-            
+            RoadNameDictPrint(NYC)
             while True:
                 try:
                     name = input('Please input the name:')
@@ -321,6 +330,7 @@ class Contributing_Interaction(Situation_Interaction):
         self.SavePath=SavePath
         self.TimeBegin=TimeBegin
         self.TimeEnd=TimeEnd
+    
     def MethodPresent(self,Level,Method='null',name='null',nameFlag=0):
         self.menu.FunctionINIT_Contributing(self.data,self.SavePath,self.TimeBegin,self.TimeEnd)
         Func_Menu={1: self.Influencing}

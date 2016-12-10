@@ -1,9 +1,19 @@
 '''
-Created on Dec 3, 2016
+This is a function user can call by input a Help
 
-@author: apple
+
+Copyright:
+@ Nan Wu 
+@ nw1045@nyu.edu
+@ wooginawunan@gmail.com
 '''
 def HelpMainCall():
-    print("...")
-    Quit=input("Back to menu by any input: ")
+    
+    print(">>>>>>>>>>>>>>>>>>>HELP MENU>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    print("Please input the commands according to the instructions")
+    print("Exit running by input a 'Exit'")
+    print("Back to upper level by input a 'Back'")
+    print("Call help menu by input a 'Help'")
+    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    input("Back to menu by any input: ")
     pass

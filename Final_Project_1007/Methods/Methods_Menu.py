@@ -1,19 +1,36 @@
 '''
-Created on Dec 2, 2016
+This module contain menu of methods and menu of level that could be used in interaction
 
 @author: apple
 '''
 from .MethodClass import SituationMethods, ContributingMethods
 class MethodsMenu_Situation():
     '''
-    classdocs
+    Situation Analysis Methods Menu
+    Attributes:
+        City: Methods printing description string
+        Borough_Whole: Methods printing description string
+        Borough_S: Methods printing description string
+        Precinct_Whole: Methods printing description string
+        Precinct_S: Methods printing description string
+        BTHS_Whole: Methods printing description string
+        BTHS_S: Methods printing description string
+        List: dictionary, keys(level), value(Methods printing description string)
+        AvailableSet: dictionary, keys(level), value(Methods function numeric label)
+        Indicator: 
+            Type: dictionary
+                Keys: int (a number that used in reading and passing the indicator)
+                Value: string (the name of the relevant indicator)
+        MethodFunction: SituationMethods object
+        FunctionList: dictionary, keys(numeric label of function),values(functions)
+        
+    Methods:
+        FunctionINIT_Situation
     '''
-  
     def __init__(self):
         '''
         Constructor
         '''
-        
         self.City=['1 Brief Summary','2 Plot by Time','3 InjuryKillPie']
         self.Borough_Whole=['0 Specific Insight','4 Map','6 Borough Compare']
         self.Borough_S=['1 Brief Summary','2 Plot by Time','3 InjuryKillPie','4 Map']
@@ -35,6 +52,14 @@ class MethodsMenu_Situation():
                         5 : 'PersonsKilled', 6 : 'MotoristsInjured', 7 : 'MotoristsKilled', 8 : 'PassengInjured', 9 : 'PassengKilled',
                         10 : 'CyclistsInjured',11 : 'CyclistsKilled',12 : 'PedestrInjured', 13 : 'PedestrKilled',14 : 'Injury_or_Fatal'}
     def FunctionINIT_Situation(self,NYC,SavePath,TimeBegin,TimeEnd):
+        '''
+        Init method functions in this level
+        Args:
+            NYC: city object
+            SavePath: data path
+            TimeBegin: Loading data from. format:[YYYY,M] example:[2015,1]
+            TimeEnd: Loading data end in. format:[YYYY,M] example:[2016,2]
+        '''
         self.MethodFunction=SituationMethods(NYC,SavePath,TimeBegin,TimeEnd)
         self.FunctionList={1:self.MethodFunction.briefSummary,
                            2:self.MethodFunction.PlotbyMonth,
@@ -43,8 +68,24 @@ class MethodsMenu_Situation():
                            5:self.MethodFunction.RankTop10,
                            6:self.MethodFunction.BoroughCompare}
 
-
 class MethodMenu_Contributing():
+    '''
+    Contributing factors Analysis Methods Menu
+    Attributes:
+        Fundamental: Methods printing description string
+        Whole: Methods printing description string
+        BTHS: Methods printing description string
+        List: dictionary, keys(level), value(Methods printing description string)
+        AvailableSet: dictionary, keys(level), value(Methods function numeric label)
+        Indicator: 
+            Type: dictionary
+                Keys: int (a number that used in reading and passing the indicator)
+                Value: string (the name of the relevant indicator)
+        MethodFunction: SituationMethods object
+        FunctionList: dictionary, keys(numeric label of function),values(functions)
+    Methods:
+        FunctionINIT_Contributing
+    '''
     def __init__(self):
         '''
         Constructor
@@ -69,6 +110,14 @@ class MethodMenu_Contributing():
                         10 : 'CyclistsInjured',11 : 'CyclistsKilled',12 : 'PedestrInjured', 13 : 'PedestrKilled',14 : 'Injury_or_Fatal'}
         
     def FunctionINIT_Contributing(self,NYC,SavePath,TimeBegin,TimeEnd):
+        '''
+        Init method functions in this level
+        Args:
+            NYC: city object
+            SavePath: data path
+            TimeBegin: Loading data from. format:[YYYY,M] example:[2015,1]
+            TimeEnd: Loading data end in. format:[YYYY,M] example:[2016,2]
+        '''
         self.MethodFunction=ContributingMethods(NYC,SavePath,TimeBegin,TimeEnd)
         self.FunctionList={1:self.MethodFunction.InfluenceONSeverity}       
         
