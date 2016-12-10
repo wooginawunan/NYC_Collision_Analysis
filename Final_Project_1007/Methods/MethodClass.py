@@ -146,8 +146,8 @@ class SituationMethods(FundamentalMethods):
             for borough in self.data.Borough_Dict.values():
                 pre_List.update(borough.precinctList)
             return self.PrecinctTableAll(pre_List, Indicator)
-
-    def PrecinctCalculate(self,Indicator,df1,df2): 
+    
+    def PrecinctCalculate(self,Indicator,df): 
         '''
         This method calculate the value of a specific Indicator on specific area and time 
         Args:
@@ -159,9 +159,9 @@ class SituationMethods(FundamentalMethods):
         Raise:
         '''
         if Indicator==1:
-            return len(df1['CollisionKey'].unique())+len(df2['CollisionKey'].unique())
+            return len(df['CollisionKey'].unique())
         else:
-            return df1[self.Indicator[Indicator]].sum()+df2[self.Indicator[Indicator]].sum() 
+            return df[self.Indicator[Indicator]].sum()
     
     def PrecinctTableUnit(self,Precinct,Indicator):
         '''
@@ -184,9 +184,13 @@ class SituationMethods(FundamentalMethods):
         table_0=dict.fromkeys(self.TimeList,0)
         for time in table_0.keys():
             try:
-                table_0[time]=self.PrecinctCalculate(Indicator, 
-                                                 Precinct.Collisions_intersection[time[0:4]][time[4:6]], 
-                                                 Precinct.Collisions_HighTunBri[time[0:4]][time[4:6]])
+                df1 = Precinct.Collisions_intersection[time[0:4]][time[4:6]]
+                table_0[time]=table_0[time]+self.PrecinctCalculate(Indicator, df1)
+            except KeyError:
+                pass
+            try:
+                df2 = Precinct.Collisions_HighTunBri[time[0:4]][time[4:6]]
+                table_0[time]=table_0[time]+self.PrecinctCalculate(Indicator, df2)
             except KeyError:
                 pass
         table=pd.DataFrame(pd.Series(table_0),columns=[Precinct.ID])
@@ -611,19 +615,14 @@ class ContributingMethods(FundamentalMethods):
                 Collisions_i = precinct.Collisions_intersection[time[0:4]][time[4:6]]
                 Factors_i = precinct.Factors_intersection[time[0:4]][time[4:6]]
                 table=table.add(self.InfCalculate(indicator,influencer,Collisions_i,Factors_i),fill_value=0)
-                try:
-                    Collisions_H = precinct.Collisions_HighTunBri[time[0:4]][time[4:6]]
-                    Factors_H = precinct.Factors_HighTunBri[time[0:4]][time[4:6]]
-                    table=table.add(self.InfCalculate(indicator,influencer,Collisions_H,Factors_H),fill_value=0)
-                except KeyError:
-                    pass
             except KeyError:
-                try:
-                    Collisions_H = precinct.Collisions_HighTunBri[time[0:4]][time[4:6]]
-                    Factors_H = precinct.Factors_HighTunBri[time[0:4]][time[4:6]]
-                    table=table.add(self.InfCalculate(indicator,influencer,Collisions_H,Factors_H),fill_value=0)
-                except KeyError:
-                    pass
+                pass
+            try:
+                Collisions_H = precinct.Collisions_HighTunBri[time[0:4]][time[4:6]]
+                Factors_H = precinct.Factors_HighTunBri[time[0:4]][time[4:6]]
+                table=table.add(self.InfCalculate(indicator,influencer,Collisions_H,Factors_H),fill_value=0)
+            except KeyError:
+                pass
         return table        
         
     def BTHRInfTable_Unit(self,BTHR,indicator,influencer):
@@ -950,7 +949,7 @@ class ContributingMethods(FundamentalMethods):
         return:
             shorted index string
         '''
-        return ['\n'.join(wrap(l, 20)) for l in df.index]
+        return ['\n'.join(wrap(l, 40)) for l in df.index]
     
     def Titleset(self,level,name,Indicator,Influencer):
         '''
@@ -1014,14 +1013,15 @@ class ContributingMethods(FundamentalMethods):
             title=self.Titleset(level, name,Indicator,Influencer),
             figsize=(10,10), 
             legend=True, 
-            fontsize=8,
-            color=self.Colorset(df)
+            fontsize=10,
+            color=self.Colorset(df),
+            #rot=10
             )
         
-        ax.set_yticklabels(self.Labelset(df),rotation=20)
+        #ax.set_yticklabels(self.Labelset(df),rotation=20)
         
         figure = ax.get_figure()
-        figure.subplots_adjust(left=0.20)
+        figure.subplots_adjust(left=0.30)
         figure.show()
         
         self.CloseFigure()

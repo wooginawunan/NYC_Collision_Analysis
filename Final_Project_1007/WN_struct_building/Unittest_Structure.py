@@ -24,6 +24,7 @@ class LoadingDataTest(unittest.TestCase):
         self.Loading=LoadingbyStructure()
         self.collisions_HighTunBri, self.factors_HighTunBri=load_HighTunBri(self.DataPath, '2015', '01', 'bk')
         self.collisions_Intersection, self.factors_Intersection=load_intersection(self.DataPath, '2015', '01', 'bk')
+    
     def test_TimeInterval(self):
         self.assertEqual(len(TimeInterval([2015,7],[2016,8])),14)
         self.assertEqual(14, sum([p in [x.month for x in TimeInterval([2015,7],[2016,8])] for p in [7,8,9,10,11,12,1,2,3,4,5,6,7,8]]))

@@ -1,7 +1,10 @@
 '''
 This module contain menu of methods and menu of level that could be used in interaction
 
-@author: apple
+Copyright:
+@ Nan Wu 
+@ nw1045@nyu.edu
+@ wooginawunan@gmail.com
 '''
 from .MethodClass import SituationMethods, ContributingMethods
 class MethodsMenu_Situation():
