@@ -19,6 +19,7 @@ from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 import mpl_toolkits 
 from mpl_toolkits.basemap import Basemap
+from matplotlib.pyplot import ylabel
 
 class FundamentalMethods():
     '''
@@ -59,6 +60,11 @@ class FundamentalMethods():
         self.Indicator={1 : 'Number of Collisions', 2 : 'CollisionInjuredCount', 3 : 'CollisionKilledCount',4 : 'PersonsInjured',
                         5 : 'PersonsKilled', 6 : 'MotoristsInjured', 7 : 'MotoristsKilled', 8 : 'PassengInjured', 9 : 'PassengKilled',
                         10 : 'CyclistsInjured',11 : 'CyclistsKilled',12 : 'PedestrInjured', 13 : 'PedestrKilled',14 : 'Injury_or_Fatal'}
+        
+        self.IndicatorPrint={1 : 'The Number of Collisions', 2 : 'CollisionInjuredCount', 3 : 'CollisionKilledCount',4 : 'The number of person injured',
+                        5 : 'The number of person killed', 6 : 'The number of Motorists injured', 7 : 'The number of Motorists killed', 8 : 'The number of passenger injured', 9 : 'The number of passenger killed',
+                        10 : 'The number of cyclists injured',11 : 'The number of cyclists killed',12 : 'The number of Pedestrian injured', 13 : 'The number of pedestrian killed',14 : 'Total Injury and Fatal'}
+    
         self.InfluencerDes={1:'VehicleTypeDescription',2:'ContributingFactorDescription'}
         
         self.TimeBegin=TimeBegin
@@ -429,13 +435,96 @@ class SituationMethods(FundamentalMethods):
             return self.BTHRTableAll(self.data.Tunnel_Dict, Indicator)
 
     def briefSummary(self,Indicator,level,name='null'):
+        '''
+        This method calculates the total number of different collision statistics
+        demanded by the user. Each indicator variable refers to a collision measure,
+        such as the number of people injured, the number of people killed
+        '''
         self.TableDICT_Init()
         print(self.Table_Dict[level](Indicator,name))
-        #TotalAccidennt()
-        #TotalInjury()
-        #TotalKilled()
+        df = self.Table_Dict[level](Indicator,name)
+        if name == 'null':        
+            rowSum = df.sum(axis = 1)
+            totalSum = rowSum.sum(axis = 0)
+            print(self.IndicatorPrint[Indicator] + ' on the ' + level + ' level ' + ' is ' + str(totalSum))
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+            
+        else:
+            totalSum = df.sum(axis = 0)
+            print(self.IndicatorPrint[Indicator] + ' in ' + name + ' is ' + str(totalSum.ix[0]))
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    
+    def CloseFigure(self):
+        '''
+        Close Figure Choose
+        '''
+        self.flag= input("Input anything to Close the Figure and Continue")
+        plt.close()
+    
+    
+    def SavePathset(self,Indicator,level,name):
+        '''
+        Save file name
+        Args:
+            level: 'Bridge','Highway','Tunnel','Road','City','Borough','Precinct'
+            name: null or a specific name
+            Influencer: Factors influencing the severity of a collision
+            Type: dictionary
+                Keys: int (a number that used in reading and passing the influencer)
+                Value: string (the name of the relevant influencer)
+            Indicator:  Indicators that used to measure the the severity of the collision
+            Type: dictionary
+                Keys: int (a number that used in reading and passing the indicator)
+                Value: string (the name of the relevant indicator)
+        Return:
+            string
+        '''
+        return ''.join([self.savepath,'/Time Series analysis on',level,'-',name,' by ', self.Indicator[Indicator],'.pdf'] 
+                        if name!='null' else [self.savepath,'/Time Series analysis on ',level," by ", self.Indicator[Indicator],'.pdf'])
+         
     def PlotbyMonth(self,Indicator,level,name='null'):
-        pass
+        '''
+        This method generate a time series plot for a collision statistics demanded
+        by the user
+        '''
+        self.TableDICT_Init()
+        df = self.Table_Dict[level](Indicator,name)
+        if name == 'null':
+            rowsum = df.sum(axis = 1)
+            ax = rowsum.plot(kind = 'bar',
+                             title='Time Series analysis on ' + level + ' level')
+            figure = ax.get_figure()
+            ax.set_xlabel('Time')
+            ax.set_ylabel(self.IndicatorPrint[Indicator])
+            figure.subplots_adjust(bottom=0.20)
+            #figure.title('Time Series analysis on ' + level + ' level')
+            #figure.ylabel(self.IndicatorPrint[Indicator])
+            #figure.xlabel('Time')
+            figure.show()
+            self.CloseFigure()
+            
+            figure.savefig(self.SavePathset(Indicator,level,name))
+            print("Figure has been saved.")
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        else:
+            #totalSum = df.sum(axis = 0)
+            totalSum=df
+            ax = totalSum.plot(kind = 'bar',
+                               title='Time Series analysis for ' + name)
+            figure = ax.get_figure()
+            ax.set_xlabel('Time')
+            ax.set_ylabel(self.IndicatorPrint[Indicator])
+            figure.subplots_adjust(bottom=0.20)
+            #figure.title('Time Series analysis for ' + name)
+            #figure.ylabel(self.IndicatorPrint[Indicator])
+            #figure.xlabel('Time')
+            figure.show()
+            
+            self.CloseFigure()
+            figure.savefig(self.SavePathset(Indicator,level,name))
+        
+            print("Figure has been saved.")
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
     def InjuryKillPIE(self,level,name='null'):
         pass
     def Map(self,Indicator,level,name='null'):
@@ -514,9 +603,51 @@ class SituationMethods(FundamentalMethods):
         plt.show()
 #         
     def BoroughCompare(self,Indicator,level,name='null'):
-        pass
-    def RankTop10(self,Indicator,level,name='null'):
-        pass
+        '''
+        This method is designed specfically for 5 boroughs. Users can see a comparision
+        of the collision statistics they choose among 5 boroughs.
+        '''
+        self.TableDICT_Init()
+        df = self.Table_Dict[level](Indicator,name)
+        sumTime = df.sum(axis = 0)
+        ax=sumTime.plot(kind = 'bar',
+                        rot=0,
+                        title='Borough Comparision')
+        figure = ax.get_figure()
+        ax.set_xlabel('Boroughs')
+        ax.set_ylabel(self.IndicatorPrint[Indicator])
+        #figure.ylabel(self.IndicatorPrint[Indicator])
+        #figure.xlabel('Boroughs')
+        figure.show()
+        self.CloseFigure()
+        figure.savefig(self.savepath+'/Borough_comp_by ' + self.Indicator[Indicator])
+        print("Figure has been saved.")
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        
+        
+    def RankTop10(self, Indicator, level, name='null'):    
+        '''
+        This method returns the the number of top 10 of a Collision statistic demanded by user.
+        '''
+        self.TableDICT_Init()
+        df = self.Table_Dict[level](Indicator,name)
+        if name == 'null':
+            rowSum = df.sum(axis = 1)
+            rowSumFrame = pd.DataFrame(rowSum, columns = [self.Indicator[Indicator]])
+            sortedFrame = rowSumFrame.sort(columns = self.Indicator[Indicator], ascending =False)
+            if len(sortedFrame.index >= 10) :
+                print(sortedFrame.head(n = 10))
+            else:
+                print(sortedFrame)
+                
+        else:
+            sortedFrame = df.sort(columns = name, ascending = False)
+            if len(df.index >= 10):
+                print(sortedFrame.head(n = 10))
+                print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+            else:
+                print(sortedFrame)
+                print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
 class ContributingMethods(FundamentalMethods):
     '''
@@ -548,7 +679,7 @@ class ContributingMethods(FundamentalMethods):
         TunnelInfTable
         BridgeTable
         RoadInfTable
-        TunnelInfTable
+        
     2 Type of methods present a report
         InfluenceONSeverity
             CloseFigure
@@ -987,8 +1118,8 @@ class ContributingMethods(FundamentalMethods):
         Return:
             string
         '''
-        return ' '.join([self.InfluencerDes[Influencer], self.Indicator[Indicator],'\n',level,'-',name,'\n','.pdf'] 
-                        if name!='null' else [self.InfluencerDes[Influencer]," on ", self.Indicator[Indicator],'\n',level,'\n','.pdf'])
+        return ' '.join([self.savepath,'/',self.InfluencerDes[Influencer], self.Indicator[Indicator],'\n',level,'-',name,'\n','.pdf'] 
+                        if name!='null' else [self.savepath,'/',self.InfluencerDes[Influencer]," on ", self.Indicator[Indicator],'\n',level,'\n','.pdf'])
     def BarPlot(self,df,Influencer,Indicator,level,name):
         '''
         Generate a bar chart

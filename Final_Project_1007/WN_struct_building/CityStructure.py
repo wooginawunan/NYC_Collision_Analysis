@@ -141,8 +141,8 @@ class city():
         with all road name begin with the key as the value.
         
         '''
-        first=list('ABCDEFGHIGKLMNOPQRSTUVWXYZ')
-        keys=list('ABCDEFGHIGKLMNOPQRSTUVWXYZ')
+        first=list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+        keys=list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
         keys.append('*Other')
         Road_Catalog=dict.fromkeys(keys)
         roadKey = np.array(list(self.Road_Dict.keys()))
