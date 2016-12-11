@@ -1118,8 +1118,8 @@ class ContributingMethods(FundamentalMethods):
         Return:
             string
         '''
-        return ' '.join([self.savepath,'/',self.InfluencerDes[Influencer], self.Indicator[Indicator],'\n',level,'-',name,'\n','.pdf'] 
-                        if name!='null' else [self.savepath,'/',self.InfluencerDes[Influencer]," on ", self.Indicator[Indicator],'\n',level,'\n','.pdf'])
+        return ''.join([self.savepath,'/',self.InfluencerDes[Influencer],'_', self.Indicator[Indicator],'_',level,'-',name,'_','.pdf'] 
+                        if name!='null' else [self.savepath,'/',self.InfluencerDes[Influencer]," on ", self.Indicator[Indicator],'_',level,'.pdf'])
     def BarPlot(self,df,Influencer,Indicator,level,name):
         '''
         Generate a bar chart
