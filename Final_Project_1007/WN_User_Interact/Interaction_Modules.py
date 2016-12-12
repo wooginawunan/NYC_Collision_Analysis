@@ -26,31 +26,44 @@ from CheckandError.Check import *
 
 import os
 import shutil
-
+import sys
+import time
+def delay_print(s, t=0.1):
+    '''
+    Reference: http://stackoverflow.com/questions/25944946/how-to-make-this-function-slow-for-certain-lines
+    Args:
+       s: string to be print
+       t: time interval designed to be waited between letters
+    '''
+    for c in s:
+        sys.stdout.write( '%s' % c )
+        sys.stdout.flush()
+        time.sleep(t)
+        
 def ProgramIntroduction():
     '''
     An brief introduction of the whole project.
     
     '''
-    print('Welcome to NYC Motor Vehicle Collisions Observation System.')
-    print('We provide an analysis of the historical trends and features of auto collision \n and other associated demographic and geographic information in NYC. \n There is also an interactive maps which may help you better observe \n the whole traffic collision situation in NYC.')
-    print('DATA SOURCE:')
-    print('DATA INTRODUCTION:')
-    print("COPY RIGHT:")
-    print("FUNCTIONS")
-    print('EXIT WAY')
-    print('HELP MENUAL')
-    print("We have several perspectives for your to explore.They are in two categories:")
-    print("Area: City; Borough; Precinct")
-    print("Type of Roadways: Highway; Tunnel; Bridge; Road")
-    print("There are available methods under the specific perspective.")
-    print("Input Examples: ")
-    print("...")
-    print("Exit by input : Exit")
-    print("Back with: Back")
-    print("Now you can begin with it.")
+    delay_print('Welcome to NYC Motor Vehicle Collisions Observation System.')
+    delay_print('We provide an analysis of the historical trends and features of auto collision \n and other associated demographic and geographic information in NYC. \n There is also an interactive maps which may help you better observe \n the whole traffic collision situation in NYC.')
+    delay_print('DATA SOURCE:\n')
+    delay_print('DATA INTRODUCTION:\n')
+    delay_print("COPY RIGHT:\n")
+    delay_print("FUNCTIONS\n")
+    delay_print('EXIT WAY\n')
+    delay_print('HELP MENUAL\n')
+    delay_print("We have several perspectives for your to explore.They are in two categories:\n")
+    delay_print("Area: City; Borough; Precinct\n")
+    delay_print("Type of Roadways: Highway; Tunnel; Bridge; Road\n")
+    delay_print("There are available methods under the specific perspective.\n")
+    delay_print("Input Examples: \n")
+    delay_print("...\n")
+    delay_print("Exit by input : Exit\n")
+    delay_print("Back with: Back\n")
+    delay_print("Now you can begin with it.\n")
     print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-   
+
 def BeginDate():
     while True:
         try:
@@ -73,7 +86,7 @@ def EndDate():
             
 def loadTimeInterval():
     while True:
-        print("Longest Time Interval is 201501-201612.")
+        delay_print("Longest Time Interval is 201501-201612.\n")
         begintime = BeginDate()
         endtime = EndDate() 
         try:

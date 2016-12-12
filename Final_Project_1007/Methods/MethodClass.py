@@ -73,6 +73,18 @@ class FundamentalMethods():
         end=datetime.date(self.TimeEnd[0],self.TimeEnd[1],20)
         ALLDATE=pd.date_range(start,end,freq='30D')
         self.TimeList=list(map(lambda date:str(date.year)+str(date.month).zfill(2), ALLDATE))
+    def ContinueALL(self):
+        '''
+        Continue 
+        '''
+        flow=input("Input anything to Continue:")
+        
+    def CloseFigure(self):
+        '''
+        Close Figure Choose
+        '''
+        self.flag= input("Input anything to Close the Figure and Continue")
+        plt.close()
         
 class SituationMethods(FundamentalMethods):
     '''
@@ -453,13 +465,8 @@ class SituationMethods(FundamentalMethods):
             totalSum = df.sum(axis = 0)
             print(self.IndicatorPrint[Indicator] + ' in ' + name + ' is ' + str(totalSum.ix[0]))
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-    
-    def CloseFigure(self):
-        '''
-        Close Figure Choose
-        '''
-        self.flag= input("Input anything to Close the Figure and Continue")
-        plt.close()
+        
+        self.ContinueALL()
     
     
     def SavePathset(self,Indicator,level,name):
@@ -525,6 +532,7 @@ class SituationMethods(FundamentalMethods):
         
             print("Figure has been saved.")
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        self.ContinueALL()
     def InjuryKillPIE(self,level,name='null'):
         pass
     def Map(self,Indicator,level,name='null'):
@@ -623,7 +631,7 @@ class SituationMethods(FundamentalMethods):
         figure.savefig(self.savepath+'/Borough_comp_by ' + self.Indicator[Indicator])
         print("Figure has been saved.")
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        
+        self.ContinueALL()
         
     def RankTop10(self, Indicator, level, name='null'):    
         '''
@@ -648,7 +656,8 @@ class SituationMethods(FundamentalMethods):
             else:
                 print(sortedFrame)
                 print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-
+        self.ContinueALL()
+        
 class ContributingMethods(FundamentalMethods):
     '''
     This class is for analysis of the contributing factors of all collision.
@@ -1056,13 +1065,6 @@ class ContributingMethods(FundamentalMethods):
         
         self.index={1:self.vehicleType,2:self.ContributingFactor}
     
-    def CloseFigure(self):
-        '''
-        Close Figure Choose
-        '''
-        self.flag= input("Input anything to Close the Figure and Continue")
-        plt.close()
-    
     def Colorset(self,df):
         '''
         Args:
@@ -1160,7 +1162,7 @@ class ContributingMethods(FundamentalMethods):
         
         print("Figure has been saved.")
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        
+       
     def InfluenceONSeverity(self,Influencer,Indicator,level,name='null'):
         '''
         Generate a bar chart about the influenceo on severity
@@ -1182,6 +1184,7 @@ class ContributingMethods(FundamentalMethods):
         
         try:
             self.BarPlot(df,Influencer,Indicator,level,name)
+            self.ContinueALL()
         except TypeError:
             print("No information.")
             raise
