@@ -535,7 +535,7 @@ class SituationMethods(FundamentalMethods):
         self.ContinueALL()
     def InjuryKillPIE(self,level,name='null'):
         pass
-    def Map(self,Indicator,level,name='null'):
+    def Map(self,Indicator,level,name='null', noPlot=False):
 
         # References:
         # http://stackoverflow.com/questions/6028675/setting-color-range-in-matplotlib-patchcollection
@@ -549,7 +549,6 @@ class SituationMethods(FundamentalMethods):
         indicator: string type. The metrics that the user would like to use, such as 'number of people injured' or 'collision'
         '''
         # Create map related variables
-        fig, ax = plt.subplots()
         patches = []
         color_list = []
         # Draw a basemap according to the geographic level
@@ -580,10 +579,9 @@ class SituationMethods(FundamentalMethods):
                     patches.append(polygons)
  
         # if 'precinct' level, then load the precinct map
-        elif level == 'precinct':
+        elif level == 'Precinct':
             mapbase.readshapefile('PrecinctBound/precinctshape', 'precinctmaps', drawbounds=True)
             # if plot precincts for the whole city
-            ## TODO: Double check input type  with Gina
             if name in ['Manhattan', 'Brooklyn', 'Bronx', 'Queens', 'Staten Island']:
                 df = self.Table_Dict[level](Indicator, name)
             # if plot precincts for only one borough
@@ -601,15 +599,18 @@ class SituationMethods(FundamentalMethods):
                     color_list.append(plot_series.loc[area])
                     polygons = Polygon(np.array(shape), True)
                     patches.append(polygons)
- 
-        colors = np.array(color_list)
-        polygons = PatchCollection(patches, cmap=matplotlib.cm.jet, alpha=0.5)
-        polygons.set_array(colors)
-        ax.add_collection(polygons)
-        plt.colorbar(polygons)
-        ##TODO: add title
-        plt.show()
-#         
+
+        self.color_list = color_list
+        self.patches = patches
+        if not noPlot:
+            colors = np.array(color_list)
+            polygons = PatchCollection(patches, cmap=matplotlib.cm.jet, alpha=0.5)
+            polygons.set_array(colors)
+            fig, ax = plt.subplots()
+            ax.add_collection(polygons)
+            plt.colorbar(polygons)
+            plt.show()
+
     def BoroughCompare(self,Indicator,level,name='null'):
         '''
         This method is designed specfically for 5 boroughs. Users can see a comparision

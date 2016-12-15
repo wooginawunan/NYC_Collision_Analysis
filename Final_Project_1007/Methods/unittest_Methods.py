@@ -30,7 +30,7 @@ class SituationMethods_Test(unittest.TestCase):
         for indicator in self.Situation.Indicator.keys():
             self.assertEqual(list(self.Situation.CityTable(indicator, 'null').ix[0])[0],values[indicator])
     '''   
-            
+
     def test_BoroughTable(self):
         #error
         value_1=dict(zip([ 'bk', 'mn', 'bx', 'qn', 'si'],[5294, 4295, 2531, 5219, 1036]))
@@ -176,9 +176,11 @@ class SituationMethods_Test(unittest.TestCase):
         df=self.Situation.RoadTable(8,'86 STREET TRANSVERSE')
         self.assertEqual(df['86 STREET TRANSVERSE']['201505'], 0)
         pass
-        
-        
-        
+            
+    def test_Map_Borough(self):
+        self.Situation.Map(1, 'Borough', noPlot=True)
+        self.assertEqual(self.Situation.color_list, [1921, 1921, 1921, 1921, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710])
+        self.assertEqual(len(self.Situation.patches), 104)
 
 class ContributingMethods_Test(unittest.TestCase):
 
@@ -340,7 +342,7 @@ class ContributingMethods_Test(unittest.TestCase):
         df=self.Contributing.RoadInfTable(2,1,'null')
         self.assertEqual(df['Number of Collisions']['AGGRESSIVE DRIVING/ROAD RAGE'], 114)
         df=self.Contributing.RoadInfTable(2,9,'null')
-        self.assertEqual(df['PassengKilled']['AGGRESSIVE DRIVING/ROAD RAGE'], 0)
+        self.assertEqual(df['PassengKilled']['AGGRESSIVE DRIVING/ROAD RAGE'], 0)  
 
 if __name__ == "__main__":
     unittest.main()
