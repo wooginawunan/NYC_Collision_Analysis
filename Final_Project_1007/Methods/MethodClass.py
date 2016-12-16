@@ -2,9 +2,8 @@
 This module contain all classes of methods could be applied on the information
 
 Copyright:
-@ Nan Wu 
-@ nw1045@nyu.edu
-@ wooginawunan@gmail.com
+@ Nan Wu, Lingshan Gao, Shucheng Yan
+@ nw1045@nyu.edu; lg2755@nyu.edu; sy1253@nyu.edu
 '''
 import datetime
 import pandas as pd
@@ -315,7 +314,7 @@ class SituationMethods(FundamentalMethods):
         
         
         Args:
-           precint_List: a dictionary contains one type of objects  
+           precinct_List: a dictionary contains one type of objects
            Indicator: one possible indicator of the severity of the collision
         Return:
            table: Data Frame
@@ -504,9 +503,6 @@ class SituationMethods(FundamentalMethods):
             ax.set_xlabel('Time')
             ax.set_ylabel(self.IndicatorPrint[Indicator])
             figure.subplots_adjust(bottom=0.20)
-            #figure.title('Time Series analysis on ' + level + ' level')
-            #figure.ylabel(self.IndicatorPrint[Indicator])
-            #figure.xlabel('Time')
             figure.show()
             self.CloseFigure()
             
@@ -533,24 +529,107 @@ class SituationMethods(FundamentalMethods):
             print("Figure has been saved.")
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         self.ContinueALL()
-    def InjuryKillPIE(self,level,name='null'):
-        pass
-    def Map(self,Indicator,level,name='null', noPlot=False):
+    def GetSum(self,Indicator,level,name):  
+        '''
+        this method calculates the total sum of collision statistics returned from the dataframe
+        '''
+        df=self.Table_Dict[level](Indicator,name)
+        if name == 'null':
+            rowSum = df.sum(axis = 1)
+            totalSum = rowSum.sum(axis = 0)
+        else:
+            totalSum = df.sum(axis = 0)
+            totalSum = totalSum.ix[0]
+        return totalSum
+    
+    def Pieconponent(self,level,name='null'):
+        '''
+        This medhod retuens a dataframe in which the total number of injury and killed combined 
+        are calculated for different people on the road.
+        
+        Example:
+                         InjuredandKill
+           Cyclists                1.0
+           Motorists             514.0
+           Passengers            381.0
+           Pedestrians             4.0
+        '''
+        dfFORpie=dict.fromkeys(['MotoristsInjured', 'MotoristsKilled',  'PassengInjured',   'PassengKilled',
+                         'CyclistsInjured', 'CyclistsKilled', 'PedestrInjured',  'PedestrKilled'])
+        
+        self.TableDICT_Init()
+        for indicator in range(6,14):
+            sum = self.GetSum(indicator, level, name)
+            dfFORpie[self.Indicator[indicator]]=sum
+        dfpie={'Motorists':dfFORpie['MotoristsInjured']+dfFORpie['MotoristsKilled'],  
+               'Passengers':dfFORpie['PassengInjured']+dfFORpie['PassengKilled'], 
+               'Cyclists':dfFORpie['CyclistsInjured']+dfFORpie['CyclistsKilled'], 
+               'Pedestrians':dfFORpie['PedestrInjured']+dfFORpie['PedestrKilled']}
+        df=pd.DataFrame(dfpie,index=['InjuredandKill'])
+        df = df.transpose()
+        return df 
+    def InjuryKillPIE(self,level,name='null',Indicator = 'null'):
+        '''
+        This method draws the pie chart to campare the number of injury and killed combined for
+        different kinds of people.
+        '''
+        
+        dfPie = self.Pieconponent(level, name)
+        print(dfPie)
+        colors = ['yellowgreen', 'gold', 'lightskyblue', 'lightcoral']
+        ax = dfPie.plot(kind = 'pie', y= 'InjuredandKill', title = 'pie chart comparison for injury and killed combined',
+                      colors=colors, shadow = True, startangle = 90, autopct = '%1.1f%%')
+        figure = ax.get_figure()
+        figure.show()
+        self.CloseFigure()
+        figure.savefig(self.savepath + '/PieChart_for_' + level + '_level')
+        print("Figure has been saved.")
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        self.ContinueALL()
+
+    def RankTop10(self, Indicator, level, name='null'):    
+        '''
+        This method returns the the number of top 10 of a Collision statistic demanded by user.
+        '''
+        self.TableDICT_Init()
+        df = self.Table_Dict[level](Indicator,name)
+        if name == 'null':
+            rowSum = df.sum(axis = 1)
+            rowSumFrame = pd.DataFrame(rowSum, columns = [self.Indicator[Indicator]])
+            sortedFrame = rowSumFrame.sort(columns = self.Indicator[Indicator], ascending =False)
+            if int(len(sortedFrame.index)) >= 10 :
+                print(sortedFrame.head(n = 10))
+            else:
+                print(sortedFrame)
+                
+        else:
+            sortedFrame = df.sort(columns = name, ascending = False)
+            if int(len(df.index)) >= 10:
+                print(sortedFrame.head(n = 10))
+                print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+            else:
+                print(sortedFrame)
+                print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        self.ContinueALL()
+        
+    def Map(self,Indicator,level,name='null'):
 
         # References:
         # http://stackoverflow.com/questions/6028675/setting-color-range-in-matplotlib-patchcollection
         # http://basemaptutorial.readthedocs.io/en/latest/shapefile.html
-        # Shapefile source : https://nycopendata.socrata.com/Public-Safety/Police-Precincts/78dh-3ptz/data
+        # Precinct shapefile source : https://nycopendata.socrata.com/Public-Safety/Police-Precincts/78dh-3ptz/data
+        # Borough boundaries shapefile source: https://data.cityofnewyork.us/City-Government/Borough-Boundaries/tqmj-j8zm/data
         '''
-        This function plots a heatmap for numbers of collision happen in each area.
+        This function plots a heatmap for number of collisions happen in each area.
         The function takes three inputs:
         level: string type. 'borough' or 'precinct'
         name: string type. Borough name. 'mn' for Manhattan, 'bk' for Brooklyn, 'bn' for Bronx, 'si' for 'Staten Island', 'qn' for Queens
-        indicator: string type. The metrics that the user would like to use, such as 'number of people injured' or 'collision'
+        indicator: string type. The metrics that the user would like to use, such as 'number of people injured' or 'number of collisions happened'
         '''
         # Create map related variables
         patches = []
         color_list = []
+        fig, ax = plt.subplots()
         # Draw a basemap according to the geographic level
         mapbase = Basemap(projection='mill',
                           llcrnrlat = 40.492,
@@ -560,57 +639,62 @@ class SituationMethods(FundamentalMethods):
                           resolution='c')
         mapbase.fillcontinents(color='white')
  
-        # Call TableDICT method to extract data
+        # Call TableDICT to extract data
         self.TableDICT_Init()
  
         # if 'borough' level and name of the borough are not specified, then plots a heatmap for NYC by boroughs.
         if (level == 'Borough') and (name == 'null'):
             df = self.Table_Dict[level](Indicator)
+            plot_series = df.sum()
+            # Draw borough bounds
             mapbase.readshapefile('BoroughBound/boroughshape', 'boroughmaps', drawbounds=True)
-            # Color the map base on their value of the indicator
+            
+            # Color the boroughs based on their value of the indicator
             for i in range(len(mapbase.boroughmaps)):
                 info = mapbase.boroughmaps_info[i]
                 shape = mapbase.boroughmaps[i]
                 area = str(info['boro_name'])
-                plot_series = df.sum()
                 if area in plot_series.index:
                     color_list.append(plot_series.loc[area])
                     polygons = Polygon(np.array(shape), True)
                     patches.append(polygons)
- 
-        # if 'precinct' level, then load the precinct map
-        elif level == 'Precinct':
-            mapbase.readshapefile('PrecinctBound/precinctshape', 'precinctmaps', drawbounds=True)
-            # if plot precincts for the whole city
-            if name in ['Manhattan', 'Brooklyn', 'Bronx', 'Queens', 'Staten Island']:
-                df = self.Table_Dict[level](Indicator, name)
-            # if plot precincts for only one borough
-            elif name == 'null':
+        else:
+            # if 'borough' level and name of the borough are listed, then plots a heatmap for NYC these boroughs by precinct
+            if (level == 'Borough') and (name in ['mn', 'bk', 'bx', 'qn', 'si']):
+                df = self.PrecinctTableAll(self.data.Borough_Dict[name].precinctList, Indicator)
+            # if 'precinct' level, then plot a heatmap by precinct for the entire city.
+            elif level == 'Precinct':
                 df = self.Table_Dict[level](Indicator)
+            
+            # Add dataframe by column
+            plot_series = df.sum()
+            # Draw precinct bounds
+            mapbase.readshapefile('PrecinctBound/precinctshape', 'precinctmaps', drawbounds=True)
+                    
             # Sum the data frame by column
             plot_series = df.sum()
- 
+            # Color the precincts based on their value of the indicator
             for i in range(len(mapbase.precinctmaps)):
                 info = mapbase.precinctmaps_info[i]
                 shape = mapbase.precinctmaps[i]
-                area = str(int(info['precinct']))
- 
+                area = "{0:0=3d}".format(int(info['precinct']))
                 if area in plot_series.index:
                     color_list.append(plot_series.loc[area])
                     polygons = Polygon(np.array(shape), True)
                     patches.append(polygons)
 
-        self.color_list = color_list
-        self.patches = patches
-        if not noPlot:
-            colors = np.array(color_list)
-            polygons = PatchCollection(patches, cmap=matplotlib.cm.jet, alpha=0.5)
-            polygons.set_array(colors)
-            fig, ax = plt.subplots()
-            ax.add_collection(polygons)
-            plt.colorbar(polygons)
-            plt.show()
-
+        colors = np.array(color_list)
+        polygons = PatchCollection(patches, cmap=matplotlib.cm.jet, alpha=0.5)
+        polygons.set_array(colors)
+        ax.add_collection(polygons)
+        plt.colorbar(polygons)
+        fig.show()
+        self.CloseFigure()
+        fig.savefig(self.savepath +'/Heatmap '+ level + name)
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print("Figure has been saved.")
+        self.ContinueALL()
+        
     def BoroughCompare(self,Indicator,level,name='null'):
         '''
         This method is designed specfically for 5 boroughs. Users can see a comparision
@@ -644,14 +728,14 @@ class SituationMethods(FundamentalMethods):
             rowSum = df.sum(axis = 1)
             rowSumFrame = pd.DataFrame(rowSum, columns = [self.Indicator[Indicator]])
             sortedFrame = rowSumFrame.sort(columns = self.Indicator[Indicator], ascending =False)
-            if len(sortedFrame.index >= 10) :
+            if int(len(sortedFrame.index)) >= 10:
                 print(sortedFrame.head(n = 10))
             else:
                 print(sortedFrame)
                 
         else:
             sortedFrame = df.sort(columns = name, ascending = False)
-            if len(df.index >= 10):
+            if int(len(df.index)) >= 10:
                 print(sortedFrame.head(n = 10))
                 print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
             else:
@@ -1189,5 +1273,3 @@ class ContributingMethods(FundamentalMethods):
         except TypeError:
             print("No information.")
             raise
-        
-            

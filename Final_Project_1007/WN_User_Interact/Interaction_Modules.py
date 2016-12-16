@@ -45,29 +45,22 @@ def ProgramIntroduction():
     An brief introduction of the whole project.
     
     '''
-    delay_print('Welcome to NYC Motor Vehicle Collisions Observation System.')
-    delay_print('We provide an analysis of the historical trends and features of auto collision \n and other associated demographic and geographic information in NYC. \n There is also an interactive maps which may help you better observe \n the whole traffic collision situation in NYC.')
-    delay_print('DATA SOURCE:\n')
-    delay_print('DATA INTRODUCTION:\n')
-    delay_print("COPY RIGHT:\n")
-    delay_print("FUNCTIONS\n")
-    delay_print('EXIT WAY\n')
-    delay_print('HELP MENUAL\n')
-    delay_print("We have several perspectives for your to explore.They are in two categories:\n")
-    delay_print("Area: City; Borough; Precinct\n")
-    delay_print("Type of Roadways: Highway; Tunnel; Bridge; Road\n")
-    delay_print("There are available methods under the specific perspective.\n")
-    delay_print("Input Examples: \n")
-    delay_print("...\n")
-    delay_print("Exit by input : Exit\n")
-    delay_print("Back with: Back\n")
-    delay_print("Now you can begin with it.\n")
+    print('Welcome to NYC Motor Vehicle Collisions Observation System.')
+    print('This program will provide an analysis on trends for auto vehicle collisions that have happened in the NYC area from January 2015 to October 2016. \n As you navigate through the program, you will find information related to collisions, such as cause analysis, number of people injured, and heatmaps that help you visually examine which area are more prone to car accidents. \n At certain level, you may be able to compare collision situations across geographic areas in NYC.')
+    print('DATA SOURCE:http://www.nyc.gov/html/nypd/html/traffic_reports/motor_vehicle_collision_data.shtml \n ')
+    print("You may explore the city by area, or by roadway types. There are several sub-menus in each of the two categories:")
+    print("Explore by area: City; Borough; Precinct")
+    print("Explore by roadway type: Highway; Tunnel; Bridge; Road")
+    print("There are available methods under the specific perspective.")
+    print("Exit by input : Exit")
+    print("Back with: Back")
+    print("Now you start exploring. Enjoy!")
     print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
 
 def BeginDate():
     while True:
         try:
-            begintime=input('Please input the beginning date (Format: YYYYMM, Example: 201501):')
+            begintime=input('Please input a year and a month to begin. The date is inclusive.\nTake note that the data is only available from January 2015.\nInput format: YYYYMM, Example: 201501\n')
             GeneralCheck(begintime)
             OneDateCheck(begintime) 
             return begintime
@@ -77,7 +70,7 @@ def BeginDate():
 def EndDate():
     while True:
         try:
-            begintime=input('Please input the ending date (Format: YYYYMM, Example: 201501):')
+            begintime=input('Please input a year and a month to end. The date is inclusive.\nTake note that the data is available to October 2016. \nWARNING: For testing purpose, please use one or two months interval, or the data may take long to load. \nInput format: YYYYMM, Example: 201501\n')
             GeneralCheck(begintime)
             OneDateCheck(begintime) 
             return begintime
@@ -86,14 +79,14 @@ def EndDate():
             
 def loadTimeInterval():
     while True:
-        delay_print("Longest Time Interval is 201501-201612.\n")
+        delay_print("Longest Time Interval is 201501-201610.\n")
         begintime = BeginDate()
         endtime = EndDate() 
         try:
             TimeBegin,TimeEnd = TwoDateCheck(begintime, endtime)
             return TimeBegin,TimeEnd,begintime,endtime
         except DATEEndBeforeBegin:
-            print("Beginning date should not later than ending date!")
+            print("Beginning date should not be later than ending date!")
             
 def CreateFolder(path):
     if not os.path.exists(path):
@@ -148,13 +141,13 @@ def Borough_Specific(NYC):
     print('You can choose from:')
     Bo_Catalog=NYC.boroughCatalog()
     print('\n'.join(Bo_Catalog))
-    return Load_Stringinput_First('Please input the short name(two letters) before the name:',NYC.Borough_Dict.keys())
+    return Load_Stringinput_First('Please input the abbreviation (two letters) for the borough:',NYC.Borough_Dict.keys())
 
 def PrecinctbyBoroughPrint(NYC):
     print('You can choose a borough from:')
     Bo_Catalog=NYC.boroughCatalog()
     print('\n'.join(Bo_Catalog))
-    Bname = input('Please input the short name(two letters) before the name:')
+    Bname = input('Please input the abbreviation (two letters) for the borough:')
     GeneralCheck(Bname)
     Bname = StringInputCheck(NYC.Borough_Dict.keys(),Bname)
     print(NYC.Borough_Dict[Bname].name+' : ')
@@ -163,8 +156,8 @@ def PrecinctbyBoroughPrint(NYC):
     return Bname
 
 def Precinct_Specific(NYC):
-    print("Precinct are grouped by Borough.")
-    print("Please specific the Borough First.")
+    print("Precincts are grouped by borough.")
+    print("Please specify the borough First.")
     while True:
         try:
             Bname = PrecinctbyBoroughPrint(NYC)
@@ -367,7 +360,7 @@ class Contributing_Interaction(Situation_Interaction):
         return Influencer
     
     def ChooseIndicator(self):
-        print('Please Choose one Indicator from:')
+        print('Please Choose one metric from:')
         for key in self.menu.Indicator.keys():
             print(':'.join([str(key),self.menu.Indicator[key]]))
         while True:

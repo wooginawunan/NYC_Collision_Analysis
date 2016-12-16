@@ -23,16 +23,8 @@ class SituationMethods_Test(unittest.TestCase):
         self.savepath = ''.join([self.dirname[:-8],'/test_results/'])
         self.NYC = StructureBuilding(self.TimeBegin,self.TimeEnd,self.DataPath)
         self.Situation = SituationMethods(self.NYC, self.savepath, self.TimeBegin,self.TimeEnd)
-    '''
-    def test_CityTable(self):
-        values=dict(zip(range(1,15),[18375, 4643.0, 27.0, 4643.0, 27.0,1587.0,5.0,1832.0,4.0,464.0,1.0,760.0,17.0,3450.0]))
-
-        for indicator in self.Situation.Indicator.keys():
-            self.assertEqual(list(self.Situation.CityTable(indicator, 'null').ix[0])[0],values[indicator])
-    '''   
 
     def test_BoroughTable(self):
-        #error
         value_1=dict(zip([ 'bk', 'mn', 'bx', 'qn', 'si'],[5294, 4295, 2531, 5219, 1036]))
         value_2=dict(zip([ 'bk', 'mn', 'bx', 'qn', 'si'],[1522.0, 686.0, 757.0, 1411.0, 267.0]))
         value_3=dict(zip([ 'bk', 'mn', 'bx', 'qn', 'si'],[9.0, 7.0, 4.0, 5.0, 2.0]))
@@ -51,11 +43,8 @@ class SituationMethods_Test(unittest.TestCase):
         for indicator in self.Situation.Indicator.keys():
             for name in [ 'bk', 'mn', 'bx', 'qn', 'si']:
                 self.assertEqual(list(self.Situation.BoroughTable(indicator,name).ix[0])[0], values[indicator][name])
-        
-
                           
     def test_PrecinctTable(self):
-        #error
         value_1=dict(zip([ '001', '100', '060'],[295, 50, 186]))
         value_2=dict(zip([ '001', '100', '060'],[49.0, 14.0, 35.0]))
         values=dict(zip(range(1,3),[value_1,value_2]))
@@ -68,7 +57,6 @@ class SituationMethods_Test(unittest.TestCase):
     
     
     def test_PrecinctCalculate(self):
-        #error
         df1 = self.NYC.Borough_Dict['mn'].precinctList['001'].Collisions_intersection['2015']['05']
         self.assertEqual(self.Situation.PrecinctCalculate(1,df1), 290)
         self.assertEqual(self.Situation.PrecinctCalculate(4,df1), 18)
@@ -127,14 +115,12 @@ class SituationMethods_Test(unittest.TestCase):
         self.assertEqual(df['Manhattan']['201505'], 136)
         pass
     def test_BTHRTableAll(self):
-        #error
         df=self.Situation.BTHRtableAll(self.NYC.Bridge_Dict,1)
         self.assertEqual(df['VZ BR UPPER']['201505'], 19)
         df=self.Situation.BTHRTableAll(self.NYC.Tunnel_Dict,13)
         self.assertEqual(df['BBT W TUBE']['201505'], 0)
         pass
     def test_TunnelTable(self):
-        #error
         df=self.Situation.TunnelTable(1,'null')
         self.assertEqual(df['BBT W TUBE']['201505'], 2)
         df=self.Situation.TunnelTable(13,'null')
@@ -176,11 +162,6 @@ class SituationMethods_Test(unittest.TestCase):
         df=self.Situation.RoadTable(8,'86 STREET TRANSVERSE')
         self.assertEqual(df['86 STREET TRANSVERSE']['201505'], 0)
         pass
-            
-    def test_Map_Borough(self):
-        self.Situation.Map(1, 'Borough', noPlot=True)
-        self.assertEqual(self.Situation.color_list, [1921, 1921, 1921, 1921, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 5130, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 8584, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10622, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710, 10710])
-        self.assertEqual(len(self.Situation.patches), 104)
 
 class ContributingMethods_Test(unittest.TestCase):
 
@@ -198,7 +179,6 @@ class ContributingMethods_Test(unittest.TestCase):
          
 
     def test_InfCalculate(self):
-        #error
         Collisions = self.NYC.Borough_Dict['bk'].precinctList['060'].Collisions_intersection['2015']['05']
         Factors = self.NYC.Borough_Dict['bk'].precinctList['060'].Factors_intersection['2015']['05']
         df=self.Contributing.InfCalculate(1,1,Collisions,Factors)
